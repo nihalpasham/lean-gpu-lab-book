@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "From GPU Question to Verified KernelIR",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [1160, 520]
+  },
+  "stages": [
+    { "label": "Ask" },
+    { "label": "Model" },
+    { "label": "Verify" },
+    { "label": "Represent" },
+    { "label": "Compile later" }
+  ],
+  "nodes": [
+    {
+      "id": "gpuQuestion",
+      "type": "external",
+      "label": "GPU question",
+      "stage": 0,
+      "row": 0
+    },
+    {
+      "id": "leanModel",
+      "type": "backend",
+      "label": "Small Lean model",
+      "stage": 1,
+      "row": 0
+    },
+    {
+      "id": "checkedTheorem",
+      "type": "security",
+      "label": "Machine-checked theorem",
+      "stage": 2,
+      "row": 0,
+      "width": 180
+    },
+    {
+      "id": "kernelIr",
+      "type": "database",
+      "label": "Tiny KernelIR",
+      "stage": 3,
+      "row": 0
+    },
+    {
+      "id": "cudaOxide",
+      "type": "backend",
+      "label": "cuda-oxide",
+      "stage": 4,
+      "row": 0
+    }
+  ],
+  "flows": [
+    {
+      "id": "formalizeQuestion",
+      "from": "gpuQuestion",
+      "to": "leanModel",
+      "label": "formalize",
+      "variant": "default"
+    },
+    {
+      "id": "proveClaim",
+      "from": "leanModel",
+      "to": "checkedTheorem",
+      "label": "prove claim",
+      "variant": "emphasis"
+    },
+    {
+      "id": "bindSemantics",
+      "from": "checkedTheorem",
+      "to": "kernelIr",
+      "label": "bind semantics",
+      "variant": "emphasis",
+      "labelAt": [655, 200]
+    },
+    {
+      "id": "futureIntegration",
+      "from": "kernelIr",
+      "to": "cudaOxide",
+      "label": "future adapter",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Current focus",
+      "items": [
+        "Learn Lean through small GPU-focused models and explicit theorems",
+        "Keep every proved claim tied to precise assumptions"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Explicit boundary",
+      "items": [
+        "KernelIR and cuda-oxide integration are planned, not yet verified",
+        "The existing Rust-to-PTX compiler path remains trusted"
+      ]
+    }
+  ]
+}

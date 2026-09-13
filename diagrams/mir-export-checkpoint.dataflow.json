@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "KernelIR Export Checkpoint in cuda-oxide",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 620]
+  },
+  "stages": [
+    { "label": "Compiler input" },
+    { "label": "Importer" },
+    { "label": "Imported IR" },
+    { "label": "SSA checkpoint" },
+    { "label": "Parallel consumers" }
+  ],
+  "nodes": [
+    {
+      "id": "stable_mir",
+      "type": "backend",
+      "label": "Stable MIR",
+      "sublabel": "rustc_public",
+      "stage": 0,
+      "row": 1,
+      "tag": "input",
+      "width": 140
+    },
+    {
+      "id": "mir_importer",
+      "type": "backend",
+      "label": "mir-importer",
+      "sublabel": "Stable MIR → Pliron",
+      "stage": 1,
+      "row": 1,
+      "tag": "translator",
+      "width": 150
+    },
+    {
+      "id": "imported_dialect_mir",
+      "type": "backend",
+      "label": "Imported dialect-mir",
+      "sublabel": "alloca / load / store form",
+      "stage": 2,
+      "row": 1,
+      "tag": "pre-SSA",
+      "width": 170
+    },
+    {
+      "id": "post_mem2reg",
+      "type": "backend",
+      "label": "Post-mem2reg dialect-mir",
+      "sublabel": "SSA, pre-loop-unroll",
+      "stage": 3,
+      "row": 1,
+      "tag": "export fork",
+      "width": 180
+    },
+    {
+      "id": "existing_ptx_path",
+      "type": "backend",
+      "label": "Existing PTX path",
+      "sublabel": "loop unroll → LLVM IR → llc → PTX",
+      "stage": 4,
+      "row": 0,
+      "tag": "unchanged",
+      "width": 190
+    },
+    {
+      "id": "kernelir_exporter",
+      "type": "security",
+      "label": "Read-only KernelIR exporter",
+      "sublabel": "versioned KernelIR + hash",
+      "stage": 4,
+      "row": 2,
+      "tag": "observer",
+      "width": 190
+    }
+  ],
+  "flows": [
+    {
+      "id": "stable_to_importer",
+      "from": "stable_mir",
+      "to": "mir_importer",
+      "label": "device call graph",
+      "classification": "versioned MIR",
+      "variant": "emphasis",
+      "labelAt": [215, 314]
+    },
+    {
+      "id": "importer_to_dialect",
+      "from": "mir_importer",
+      "to": "imported_dialect_mir",
+      "label": "translate functions and operations",
+      "classification": "dialect construction",
+      "variant": "emphasis",
+      "labelAt": [418, 314]
+    },
+    {
+      "id": "dialect_to_checkpoint",
+      "from": "imported_dialect_mir",
+      "to": "post_mem2reg",
+      "label": "mem2reg → SSA",
+      "classification": "normalized IR",
+      "variant": "emphasis",
+      "labelAt": [635, 314]
+    },
+    {
+      "id": "checkpoint_to_ptx_path",
+      "from": "post_mem2reg",
+      "to": "existing_ptx_path",
+      "label": "continue compilation",
+      "classification": "existing path",
+      "variant": "emphasis",
+      "route": "vertical-channel",
+      "channelX": 847,
+      "labelAt": [850, 218]
+    },
+    {
+      "id": "checkpoint_to_exporter",
+      "from": "post_mem2reg",
+      "to": "kernelir_exporter",
+      "label": "read-only snapshot",
+      "classification": "semantic projection",
+      "variant": "dashed",
+      "route": "vertical-channel",
+      "channelX": 853,
+      "labelAt": [850, 314]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Why this checkpoint",
+      "items": [
+        "mem2reg exposes SSA data flow instead of mutable local slots",
+        "The exporter observes before annotated loop unrolling rewrites loop structure",
+        "The branch leaves cuda-oxide's established lowering path intact"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fail-closed projection",
+      "items": [
+        "Every supported operation has an explicit KernelIR encoding",
+        "Calls, intrinsics, or memory forms outside the profile are errors",
+        "The hash covers schema version, semantics profile, and canonical bytes"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Initial trust boundary",
+      "items": [
+        "Lean reasons about decoded KernelIR rather than arbitrary Rust source",
+        "The exporter is trusted until a refinement or translation validator exists",
+        "LLVM, PTX tools, driver, and hardware remain downstream assumptions"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Lean Verification Beside the cuda-oxide PTX Path",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 620]
+  },
+  "stages": [
+    { "label": "Rust source" },
+    { "label": "rustc boundary" },
+    { "label": "cuda-oxide IR" },
+    { "label": "Parallel paths" },
+    { "label": "Outputs" }
+  ],
+  "nodes": [
+    {
+      "id": "rust_kernel",
+      "type": "frontend",
+      "label": "Rust #[kernel]",
+      "sublabel": "normal cuda-oxide source",
+      "stage": 0,
+      "row": 1,
+      "tag": "source",
+      "width": 140
+    },
+    {
+      "id": "stable_mir",
+      "type": "backend",
+      "label": "rustc_public / Stable MIR",
+      "sublabel": "typed, optimized, monomorphized",
+      "stage": 1,
+      "row": 1,
+      "tag": "versioned view",
+      "width": 180
+    },
+    {
+      "id": "ssa_checkpoint",
+      "type": "backend",
+      "label": "Post-mem2reg dialect-mir",
+      "sublabel": "SSA, pre-loop-unroll checkpoint",
+      "stage": 2,
+      "row": 1,
+      "tag": "shared fork",
+      "width": 180
+    },
+    {
+      "id": "existing_lowering",
+      "type": "backend",
+      "label": "Existing lowering pipeline",
+      "sublabel": "mir-transforms → mir-lower → LLVM IR",
+      "stage": 3,
+      "row": 0,
+      "tag": "unchanged",
+      "width": 190
+    },
+    {
+      "id": "kernelir_exporter",
+      "type": "security",
+      "label": "Read-only KernelIR exporter",
+      "sublabel": "validate and canonicalize supported IR",
+      "stage": 3,
+      "row": 2,
+      "tag": "fail closed",
+      "width": 172
+    },
+    {
+      "id": "ptx",
+      "type": "external",
+      "label": "PTX",
+      "sublabel": "existing llc path",
+      "stage": 4,
+      "row": 0,
+      "tag": "device artifact",
+      "width": 140
+    },
+    {
+      "id": "lean_proof",
+      "type": "security",
+      "label": "Lean semantics + proofs",
+      "sublabel": "hash-bound certificate",
+      "stage": 4,
+      "row": 2,
+      "tag": "verified subset",
+      "width": 150
+    }
+  ],
+  "flows": [
+    {
+      "id": "rust_to_stable_mir",
+      "from": "rust_kernel",
+      "to": "stable_mir",
+      "label": "checked MIR",
+      "classification": "compiler semantics",
+      "variant": "emphasis",
+      "labelAt": [198, 314]
+    },
+    {
+      "id": "stable_mir_to_ssa",
+      "from": "stable_mir",
+      "to": "ssa_checkpoint",
+      "label": "mir-importer + mem2reg",
+      "classification": "IR translation and SSA promotion",
+      "variant": "emphasis",
+      "labelAt": [423, 314]
+    },
+    {
+      "id": "ssa_to_lowering",
+      "from": "ssa_checkpoint",
+      "to": "existing_lowering",
+      "label": "existing compiler path",
+      "classification": "existing path",
+      "variant": "emphasis",
+      "route": "vertical-channel",
+      "channelX": 632,
+      "labelAt": [635, 218]
+    },
+    {
+      "id": "lowering_to_ptx",
+      "from": "existing_lowering",
+      "to": "ptx",
+      "label": "LLVM IR → llc",
+      "classification": "code generation",
+      "variant": "emphasis",
+      "labelAt": [865, 200]
+    },
+    {
+      "id": "ssa_to_exporter",
+      "from": "ssa_checkpoint",
+      "to": "kernelir_exporter",
+      "label": "read-only snapshot",
+      "classification": "read-only projection",
+      "variant": "dashed",
+      "route": "vertical-channel",
+      "channelX": 647,
+      "labelAt": [635, 314]
+    },
+    {
+      "id": "exporter_to_lean",
+      "from": "kernelir_exporter",
+      "to": "lean_proof",
+      "label": "KernelIR + hash",
+      "classification": "proof input",
+      "variant": "security",
+      "labelAt": [855, 428]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Rust remains the source",
+      "items": [
+        "cuda-oxide keeps its normal #[kernel] authoring model",
+        "rustc_public exposes the versioned Stable MIR boundary",
+        "The established PTX path continues unchanged"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "One semantic checkpoint",
+      "items": [
+        "The proof branch reads post-mem2reg dialect-mir in SSA form",
+        "The snapshot occurs before annotated loop unrolling",
+        "Unsupported operations are rejected rather than erased"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Scoped claim",
+      "items": [
+        "Lean proves properties of the decoded KernelIR semantics",
+        "The certificate identifies the exact canonical KernelIR",
+        "Exporter and downstream lowering remain trusted until refined"
+      ]
+    }
+  ]
+}

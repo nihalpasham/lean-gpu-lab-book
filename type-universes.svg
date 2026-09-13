@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="title description">
+  <title id="title">Lean type universes as concentric circles</title>
+  <desc id="description">Prop sits inside Type 0, which sits inside Type 1, which sits inside Type 2. Inner universe levels remain usable at outer levels.</desc>
+
+  <rect width="960" height="720" rx="24" fill="#ffffff"/>
+
+  <circle cx="480" cy="350" r="310" fill="#f3e8ff" stroke="#7e22ce" stroke-width="3"/>
+  <circle cx="480" cy="350" r="245" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+  <circle cx="480" cy="350" r="180" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/>
+  <circle cx="480" cy="350" r="105" fill="#fef3c7" stroke="#d97706" stroke-width="3"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" text-anchor="middle" fill="#111827">
+    <text x="480" y="78" font-size="26" font-weight="700">Type 2</text>
+    <text x="480" y="143" font-size="26" font-weight="700">Type 1</text>
+    <text x="480" y="202" font-size="24" font-weight="700">Type 0</text>
+    <text x="480" y="228" font-size="16" fill="#166534">written <tspan font-weight="700">Type</tspan></text>
+    <text x="480" y="300" font-size="27" font-weight="700">Prop</text>
+
+    <text x="480" y="344" font-size="18" textLength="174" lengthAdjust="spacingAndGlyphs">True · False · 2 = 2</text>
+    <text x="480" y="374" font-size="18" textLength="130" lengthAdjust="spacingAndGlyphs">x &lt; array.size</text>
+    <text x="480" y="408" font-size="15" textLength="150" lengthAdjust="spacingAndGlyphs" fill="#92400e">individual propositions</text>
+
+    <text x="480" y="480" font-size="18" font-weight="600">Nat · Bool</text>
+    <text x="480" y="508" font-size="18" font-weight="600" textLength="150" lengthAdjust="spacingAndGlyphs">Thread1D · Prop</text>
+    <text x="480" y="570" font-size="18" font-weight="600" textLength="145" lengthAdjust="spacingAndGlyphs">Type 0 : Type 1</text>
+    <text x="480" y="635" font-size="18" font-weight="600" textLength="145" lengthAdjust="spacingAndGlyphs">Type 1 : Type 2</text>
+
+    <text x="480" y="700" font-size="18" fill="#4b5563">Inner levels remain usable at outer levels · the circles are cumulative</text>
+  </g>
+</svg>

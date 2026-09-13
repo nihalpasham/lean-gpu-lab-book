@@ -1,0 +1,1317 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Lean GPU Lab</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Learn Lean 4 by proving small, GPU-focused claims.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-ea176387.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-1f88d54c.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Lean GPU Lab</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="lean-gpu-lab"><a class="header" href="#lean-gpu-lab">Lean GPU Lab</a></h1>
+<p>A proof-first field guide to learning Lean 4 with small, concrete GPU questions—and eventually connecting those proofs to cuda-oxide.</p>
+<h2 id="the-plan"><a class="header" href="#the-plan">The plan</a></h2>
+<p>Two parts, one destination:</p>
+<a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/project-roadmap.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diagrams/project-roadmap.share-card.dark.png">
+    <img src="diagrams/project-roadmap.share-card.light.png" alt="Workflow from learning Lean with GPU questions to a future KernelIR proof gate and cuda-oxide integration" width="1200">
+  </picture>
+</a>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/project-roadmap.html">Open the interactive Archify diagram</a> · <a href="diagrams/project-roadmap.workflow.json">View its typed source</a></p>
+<ul>
+<li><strong>Now:</strong> make Lean feel ordinary by proving small GPU facts.</li>
+<li><strong>Later:</strong> give those proofs a precise cuda-oxide IR to talk about.</li>
+<li><strong>Not yet:</strong> claim that Rust, LLVM, PTX, or GPU execution is verified end to end.</li>
+</ul>
+<h2 id="read-this-like-a-book"><a class="header" href="#read-this-like-a-book">Read this like a book</a></h2>
+<ul>
+<li><a href="#getting-started">Getting started</a>
+<ul>
+<li>Reopen the project, run the checks, and return to the first theorem.</li>
+</ul>
+</li>
+<li><a href="#part-1--learn-lean-4-with-gpu-problems">Part 1: learn Lean 4</a>
+<ul>
+<li>Lessons, milestones, and what “done” means.</li>
+</ul>
+</li>
+<li><a href="#lean-tooling-in-rust-terms">Lean tooling, in Rust terms</a>
+<ul>
+<li>The compiler, toolchain manager, build system, project files, and <code>leanc</code>.</li>
+</ul>
+</li>
+<li><a href="#type-universes--the-nested-circle-picture">Type universes, as nested circles</a>
+<ul>
+<li><code>Prop</code>, <code>Type</code>, <code>Sort</code>, cumulativity, and why the hierarchy exists.</li>
+</ul>
+</li>
+<li><a href="#inspecting-generated-lean-code">Inspecting generated Lean code</a>
+<ul>
+<li>Find derived instances with <code>#synth</code>, follow them with <code>#print</code>, and inspect deriving traces.</li>
+</ul>
+</li>
+<li><a href="#dissecting-deriving-decidableeq">Dissecting <code>deriving DecidableEq</code></a>
+<ul>
+<li>Follow <code>Thread1D</code> from field comparisons to proof-carrying equality decisions.</li>
+</ul>
+</li>
+<li><a href="#part-2--later-connect-the-proofs-to-cuda-oxide">Part 2: cuda-oxide integration</a>
+<ul>
+<li>KernelIR, compiler hook, proof gate, and trust boundary.</li>
+</ul>
+</li>
+<li><a href="#diagram-sources-and-maintenance">Diagram sources and maintenance</a>
+<ul>
+<li>Typed sources, regeneration commands, and the style choice behind each diagram.</li>
+</ul>
+</li>
+</ul>
+<h2 id="documentation-style"><a class="header" href="#documentation-style">Documentation style</a></h2>
+<p>Every document in this folder should be:</p>
+<ul>
+<li><strong>Casual:</strong> explain things like one engineer talking to another.</li>
+<li><strong>Concise:</strong> short sections, short bullets, no repeated background.</li>
+<li><strong>Simple:</strong> introduce one idea at a time and define unfamiliar terms.</li>
+<li><strong>Clear:</strong> state the purpose, the boundary, and what “done” means.</li>
+<li><strong>Precise:</strong> simplify the wording, not the technical meaning.</li>
+<li><strong>Visual first:</strong> use a small diagram, table, tree, or flow whenever it explains the relationship faster than prose.</li>
+</ul>
+<p>Use this pattern when it fits:</p>
+<pre><code class="language-text">question
+   ↓
+small visual
+   ↓
+well-explained bullets
+   ↓
+limits / done criteria
+</code></pre>
+<ul>
+<li>Prefer one useful illustration over several decorative ones.</li>
+<li>Keep diagrams small enough to understand at a glance.</li>
+<li>Avoid walls of text.</li>
+</ul>
+<h2 id="status-marks"><a class="header" href="#status-marks">Status marks</a></h2>
+<ul>
+<li>✅ Done and checked.</li>
+<li>▶ Current focus.</li>
+<li>○ Planned.</li>
+<li>⚠ Trusted, but not proved.</li>
+<li>🚧 Deliberately not modeled yet.</li>
+</ul>
+<h2 id="one-rule-that-matters"><a class="header" href="#one-rule-that-matters">One rule that matters</a></h2>
+<pre><code class="language-text">small claim → precise model → checked theorem → explicit boundary
+</code></pre>
+<ul>
+<li>We will say exactly what Lean proved.</li>
+<li>We will also say what remains trusted.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="getting-started"><a class="header" href="#getting-started">Getting started</a></h1>
+<p>This chapter gets the lab back into your hands after a break. The first goal is deliberately small: open one theorem, inspect its goal, and make the project pass its checks.</p>
+<h2 id="what-you-need"><a class="header" href="#what-you-need">What you need</a></h2>
+<ul>
+<li><a href="https://github.com/leanprover/elan">Elan</a>, which installs and selects Lean toolchains.</li>
+<li>Cursor or VS Code with the official <code>leanprover.lean4</code> extension.</li>
+<li>This repository checked out locally.</li>
+</ul>
+<p>The repository pins Lean <code>4.33.1</code> in <code>lean-toolchain</code>, so Elan selects the same compiler for everyone.</p>
+<h2 id="check-the-project"><a class="header" href="#check-the-project">Check the project</a></h2>
+<p>From the repository root:</p>
+<pre><code class="language-bash">source "$HOME/.elan/env"
+lake build
+lake exe lean-gpu-lab
+</code></pre>
+<p>The executable should finish with:</p>
+<pre><code class="language-text">Lean GPU Lab is ready: block 3, lane 7, block size 256 → global index 775
+</code></pre>
+<h2 id="open-the-first-lesson"><a class="header" href="#open-the-first-lesson">Open the first lesson</a></h2>
+<pre><code class="language-bash">code .
+</code></pre>
+<p>Cursor users can run <code>cursor .</code> instead.</p>
+<p>Then open <code>LeanGpuLab/Lessons/ThreadIndex.lean</code> and find:</p>
+<ul>
+<li><code>Thread1D</code>, the first structure;</li>
+<li><code>globalIdx</code>, the first GPU-focused function;</li>
+<li><code>sameBlockGlobalIdxInjective</code>, the first reusable theorem.</li>
+</ul>
+<p>Put the cursor inside a theorem. Lean’s InfoView should show the current goal and update as you edit the proof.</p>
+<h2 id="resume-the-learning-loop"><a class="header" href="#resume-the-learning-loop">Resume the learning loop</a></h2>
+<p>For each small GPU question:</p>
+<ol>
+<li>predict what the model should do;</li>
+<li>evaluate a concrete example;</li>
+<li>prove the intended fact;</li>
+<li>weaken an assumption or construct a counterexample;</li>
+<li>run <code>lake build</code> again.</li>
+</ol>
+<p>Continue with the <a href="#part-1--learn-lean-4-with-gpu-problems">Part I learning path</a> when that rhythm feels familiar again.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="part-1--learn-lean-4-with-gpu-problems"><a class="header" href="#part-1--learn-lean-4-with-gpu-problems">Part 1 — learn Lean 4 with GPU problems</a></h1>
+<h2 id="the-idea"><a class="header" href="#the-idea">The idea</a></h2>
+<ul>
+<li>Learn one Lean concept at a time.</li>
+<li>Attach it to one concrete GPU question.</li>
+<li>Finish with a theorem and a nearby counterexample.</li>
+</ul>
+<a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/learning-loop.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diagrams/learning-loop.share-card.dark.png">
+    <img src="diagrams/learning-loop.share-card.light.png" alt="Repeating Lean lesson workflow: ask, model, prove, break, improve, and repeat" width="1200">
+  </picture>
+</a>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/learning-loop.html">Open the interactive Archify diagram</a> · <a href="diagrams/learning-loop.workflow.json">View its typed source</a></p>
+<h2 id="learning-path"><a class="header" href="#learning-path">Learning path</a></h2>
+<pre><code class="language-text">✅ Boot
+   ↓
+▶ Thread indexing
+   ↓
+○ Pure memory
+   ↓
+○ Bounds and races
+   ↓
+○ Tiny semantics
+   ↓
+○ Whole-kernel vector add
+   ↓
+○ Blocks, shared memory, barriers, loops
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Step</th><th>GPU question</th><th>Lean idea</th><th>Done when</th></tr>
+</thead>
+<tbody>
+<tr><td>L0 · Boot</td><td>Does the environment work?</td><td><code>def</code>, <code>#eval</code>, theorem</td><td><code>lake build</code> passes and InfoView shows goals</td></tr>
+<tr><td>L1 · Indexing</td><td>Which element is this thread?</td><td>structures, <code>Nat</code>, rewriting</td><td>prove legal indices and index uniqueness</td></tr>
+<tr><td>L2 · Memory</td><td>What did a load read?</td><td>functions, equality, <code>funext</code></td><td>prove read-after-write and noninterference</td></tr>
+<tr><td>L3 · Races</td><td>Can two threads collide?</td><td><code>∀</code>, <code>∃</code>, negation, witnesses</td><td>prove identity writes safe and a counter unsafe</td></tr>
+<tr><td>L4 · Semantics</td><td>What does this statement mean?</td><td>inductive types, recursion</td><td>evaluate a tiny <code>Expr</code>/<code>Stmt</code> language</td></tr>
+<tr><td>L5 · Result</td><td>Does vector add work globally?</td><td>induction and decomposition</td><td>lift one-thread correctness to every output</td></tr>
+<tr><td>L6 · SIMT</td><td>What changes across blocks/phases?</td><td>invariants and traces</td><td>model address spaces and real barrier phases</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="the-rhythm-of-one-lesson"><a class="header" href="#the-rhythm-of-one-lesson">The rhythm of one lesson</a></h2>
+<ul>
+<li><strong>30–60 minutes.</strong> Small enough to finish while the ideas are fresh.</li>
+<li><strong>Read:</strong> one short Lean file.</li>
+<li><strong>Predict:</strong> say what <code>#eval</code> or the theorem should do.</li>
+<li><strong>Prove:</strong> use the InfoView instead of guessing blindly.</li>
+<li><strong>Break:</strong> change a hypothesis or construct an unsafe example.</li>
+<li><strong>Check:</strong> run <code>lake build</code> and inspect <code>#print axioms</code>.</li>
+</ul>
+<pre><code class="language-text">read → predict → prove → break → check
+</code></pre>
+<h2 id="start-here"><a class="header" href="#start-here">Start here</a></h2>
+<ul>
+<li>Open <code>LeanGpuLab/Lessons/ThreadIndex.lean</code>.</li>
+<li>Find these three pieces:
+<ul>
+<li><code>Thread1D</code> — our first structure.</li>
+<li><code>globalIdx</code> — our first GPU-focused function.</li>
+<li><code>sameBlockGlobalIdxInjective</code> — our first reusable theorem.</li>
+</ul>
+</li>
+<li>Put the cursor after each proof step and watch the goal change.</li>
+<li>Then temporarily remove a proof line and rebuild it from the goal.</li>
+</ul>
+<h2 id="proof-hygiene"><a class="header" href="#proof-hygiene">Proof hygiene</a></h2>
+<ul>
+<li>No <code>sorry</code> in completed lessons.</li>
+<li>No project-defined axioms supporting important results.</li>
+<li>Run <code>#print axioms theoremName</code> on milestone theorems.</li>
+<li>Lean may list foundations such as <code>propext</code> or <code>Quot.sound</code>; the red flags here are <code>sorryAx</code> and our own axioms.</li>
+<li>Start with <code>Nat</code>, <code>Int</code>, and exact operations.</li>
+<li>Move to <code>BitVec</code> before claiming machine-integer correctness.</li>
+<li>Treat IEEE floating point as a separate refinement problem.</li>
+</ul>
+<h2 id="helpful-references"><a class="header" href="#helpful-references">Helpful references</a></h2>
+<ul>
+<li><a href="https://lean-lang.org/functional_programming_in_lean/">Functional Programming in Lean</a></li>
+<li><a href="https://docs.lean-lang.org/theorem_proving_in_lean4/">Theorem Proving in Lean 4</a></li>
+<li><a href="https://lean-lang.org/doc/reference/latest/">Lean language reference</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="lean-tooling-in-rust-terms"><a class="header" href="#lean-tooling-in-rust-terms">Lean tooling, in Rust terms</a></h1>
+<p>Lean’s tools are close to Rust’s. The names change, but the jobs are familiar.</p>
+<h2 id="the-quick-map"><a class="header" href="#the-quick-map">The quick map</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust</th><th>Lean 4</th><th>Job</th></tr>
+</thead>
+<tbody>
+<tr><td><code>rustc</code></td><td><code>lean</code></td><td>check and compile source</td></tr>
+<tr><td><code>rustup</code></td><td><code>elan</code></td><td>install and select toolchains</td></tr>
+<tr><td><code>cargo</code></td><td><code>lake</code></td><td>manage packages, builds, and executables</td></tr>
+<tr><td><code>Cargo.toml</code></td><td><code>lakefile.toml</code></td><td>describe the package and its targets</td></tr>
+<tr><td><code>rust-toolchain.toml</code></td><td><code>lean-toolchain</code></td><td>pin the toolchain version</td></tr>
+<tr><td><code>Cargo.lock</code></td><td><code>lake-manifest.json</code></td><td>record resolved dependency revisions</td></tr>
+<tr><td><code>target/</code></td><td><code>.lake/build/</code></td><td>hold build artifacts</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="how-the-pieces-fit"><a class="header" href="#how-the-pieces-fit">How the pieces fit</a></h2>
+<a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/lean-toolchain.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diagrams/lean-toolchain.share-card.dark.png">
+    <img src="diagrams/lean-toolchain.share-card.light.png" alt="Lean toolchain workflow from the editor and Elan through Lake, Lean, leanc, and build outputs" width="1200">
+  </picture>
+</a>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/lean-toolchain.html">Open the interactive Archify diagram</a> · <a href="diagrams/lean-toolchain.workflow.json">View its typed source</a></p>
+<p>The short version:</p>
+<pre><code class="language-text">Elan chooses.
+Lake orchestrates.
+Lean checks and compiles.
+</code></pre>
+<h2 id="lean--roughly-rustc"><a class="header" href="#lean--roughly-rustc"><code>lean</code> — roughly <code>rustc</code></a></h2>
+<ul>
+<li>Reads <code>.lean</code> source files.</li>
+<li>Elaborates convenient syntax into precise core terms.</li>
+<li>Type-checks programs.</li>
+<li>Sends theorem declarations through Lean’s small trusted kernel.</li>
+<li>Produces <code>.olean</code> compiled modules.</li>
+<li>Can also produce code used by native executables.</li>
+</ul>
+<p>The important difference:</p>
+<pre><code class="language-text">Rust build: program must type-check
+Lean build: program and every theorem proof must type-check
+</code></pre>
+<ul>
+<li>A broken proof is a build error.</li>
+<li>There is no separate “proof build” for ordinary Lean development.</li>
+</ul>
+<h2 id="elan--almost-exactly-rustup"><a class="header" href="#elan--almost-exactly-rustup"><code>elan</code> — almost exactly <code>rustup</code></a></h2>
+<ul>
+<li>Installs Lean toolchains.</li>
+<li>Lets different projects use different Lean versions.</li>
+<li>Reads the nearest <code>lean-toolchain</code> file automatically.</li>
+<li>Provides proxy commands such as <code>lean</code> and <code>lake</code> on <code>PATH</code>.</li>
+</ul>
+<p>In our local projects:</p>
+<pre><code class="language-text">cLean/          → Lean 4.20.1
+lean-gpu-lab/   → Lean 4.33.1
+</code></pre>
+<p>Useful check:</p>
+<pre><code class="language-bash">elan show
+</code></pre>
+<h2 id="lake--roughly-cargo"><a class="header" href="#lake--roughly-cargo"><code>lake</code> — roughly <code>cargo</code></a></h2>
+<ul>
+<li>Creates projects.</li>
+<li>Resolves package dependencies.</li>
+<li>Tracks Lean module dependencies.</li>
+<li>Builds libraries and executables incrementally.</li>
+<li>Stores generated files under <code>.lake/</code>.</li>
+</ul>
+<p>Common commands:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust</th><th>Lean 4</th></tr>
+</thead>
+<tbody>
+<tr><td><code>cargo new gpu-lab</code></td><td><code>lake new gpu-lab</code></td></tr>
+<tr><td><code>cargo build</code></td><td><code>lake build</code></td></tr>
+<tr><td><code>cargo run</code></td><td><code>lake exe lean-gpu-lab</code></td></tr>
+<tr><td><code>rustup show</code></td><td><code>elan show</code></td></tr>
+<tr><td><code>rustc --version</code></td><td><code>lean --version</code></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="the-important-project-files"><a class="header" href="#the-important-project-files">The important project files</a></h2>
+<pre><code class="language-text">lean-gpu-lab/
+├── lean-toolchain       # exact Lean version
+├── lakefile.toml        # package, library, and executable targets
+├── lake-manifest.json   # resolved dependencies
+├── LeanGpuLab.lean      # library root module
+├── Main.lean            # executable root
+└── .lake/build/         # generated artifacts
+</code></pre>
+<ul>
+<li><code>lakefile.toml</code> is the normal declarative format.</li>
+<li>A project may instead use <code>lakefile.lean</code> when build configuration needs Lean code.</li>
+</ul>
+<h2 id="where-leanc-fits"><a class="header" href="#where-leanc-fits">Where <code>leanc</code> fits</a></h2>
+<p><code>leanc</code> is not a general “Lean-to-C” frontend. It is the bundled C compiler driver near the end of Lean’s native pipeline.</p>
+<pre><code class="language-text">.lean source
+    ↓ lean
+Lean compiler IR
+    ↓
+generated C
+    ↓ leanc
+object files / executable
+</code></pre>
+<ul>
+<li>There is no official general-purpose <code>leanrust</code> command today.</li>
+<li>Rust interoperability normally uses an FFI or a small explicit adapter.</li>
+<li>Specialized projects can generate Rust from restricted Lean DSLs, but they do not compile arbitrary Lean programs.</li>
+</ul>
+<p>For our GPU work, we want the explicit boundary:</p>
+<pre><code class="language-text">Lean theorem + KernelIR
+          ↓ fixture
+small Rust adapter
+          ↓
+cuda-oxide-codegen → PTX
+</code></pre>
+<h2 id="what-the-infoview-tells-us"><a class="header" href="#what-the-infoview-tells-us">What the InfoView tells us</a></h2>
+<p>When Cursor shows a live goal and updates it as the cursor moves:</p>
+<ul>
+<li>the Lean extension found the project;</li>
+<li>Elan selected the pinned toolchain;</li>
+<li>Lake supplied the project environment;</li>
+<li>Lean elaborated the current file.</li>
+</ul>
+<p>That is our normal fast feedback loop—similar to rust-analyzer, with proof goals added.</p>
+<h2 id="official-references"><a class="header" href="#official-references">Official references</a></h2>
+<ul>
+<li><a href="https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/">Lean build tools</a></li>
+<li><a href="https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/">Elan toolchains</a></li>
+<li><a href="https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/">Lake</a></li>
+<li><a href="https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/">Elaboration and compilation</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="type-universes--the-nested-circle-picture"><a class="header" href="#type-universes--the-nested-circle-picture">Type universes — the nested-circle picture</a></h1>
+<h2 id="the-picture"><a class="header" href="#the-picture">The picture</a></h2>
+<p>Lean’s universes are easiest to picture as <strong>filled, nested circles</strong>:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="type-universes.svg" alt="Lean type universes shown as concentric circles"><span class="img-wrapper"><img src="type-universes.svg" alt="Lean type universes shown as concentric circles"></span></label></p>
+<ul>
+<li>The center contains propositions.</li>
+<li>Each outer level can use everything from the levels inside it.</li>
+<li>Moving outward also lets Lean talk about the previous universe itself.</li>
+</ul>
+<p>The same picture in terminal-friendly ASCII:</p>
+<pre><code class="language-text">+------------------------------- Type 2 --------------------------------+
+| +----------------------------- Type 1 ------------------------------+ |
+| | +--------------------------- Type 0 ----------------------------+ | |
+| | |         Nat · Bool · Thread1D · Prop                          | | |
+| | |  +------------------------- Prop --------------------------+  | | |
+| | |  |      True · False · 2 = 2 · x &lt; array.size              |  | | |
+| | |  +---------------------------------------------------------+  | | |
+| | +---------------------------------------------------------------+ | |
+| +-------------------------------------------------------------------+ |
++-----------------------------------------------------------------------+
+</code></pre>
+<p>This is a type-checking model, not a picture of runtime memory or literal
+set-theoretic containers.</p>
+<h2 id="read-the-hierarchy-as-a-chain"><a class="header" href="#read-the-hierarchy-as-a-chain">Read the hierarchy as a chain</a></h2>
+<pre><code class="language-text">rfl
+ │ proves
+ ▼
+(2 = 2)
+ │ is a proposition in
+ ▼
+Prop
+ │ lives in
+ ▼
+Type 0
+ │ lives in
+ ▼
+Type 1
+ │ lives in
+ ▼
+Type 2
+</code></pre>
+<p>In Lean notation:</p>
+<pre><code class="language-lean">rfl     : (2 = 2)
+(2 = 2) : Prop
+Prop    : Type 0
+Type 0  : Type 1
+Type 1  : Type 2
+</code></pre>
+<ul>
+<li>A <strong>term</strong> has a type: <code>rfl : 2 = 2</code>.</li>
+<li>A <strong>proposition</strong> is a type in <code>Prop</code>: <code>(2 = 2) : Prop</code>.</li>
+<li>A <strong>small data type</strong> lives in <code>Type 0</code>: <code>Nat : Type 0</code>.</li>
+<li>A universe lives one level higher: <code>Type 0 : Type 1</code>.</li>
+</ul>
+<p><code>Type</code> with no number means <code>Type 0</code>.</p>
+<h2 id="the-circles-overlap-on-purpose"><a class="header" href="#the-circles-overlap-on-purpose">The circles overlap on purpose</a></h2>
+<p>The universes are <strong>cumulative</strong>:</p>
+<pre><code class="language-text">Type 0  ──usable as──▶  Type 1  ──usable as──▶  Type 2
+</code></pre>
+<ul>
+<li><code>Nat</code> naturally lives in <code>Type 0</code>.</li>
+<li>Lean may also use <code>Nat</code> where a type from <code>Type 1</code> or <code>Type 2</code> is expected.</li>
+<li>The outer levels therefore do not contain completely different types.</li>
+<li>A useful approximation is <code>Type 0 ⊆ Type 1 ⊆ Type 2</code>.</li>
+</ul>
+<p>Think <strong>nested filled circles</strong>, not separate rings:</p>
+<pre><code class="language-text">Good:  [ Type 2 [ Type 1 [ Type 0 [ Prop ] ] ] ]
+
+Wrong: [ Prop ]  [ Type 0 ]  [ Type 1 ]  [ Type 2 ]
+</code></pre>
+<h2 id="why-lean-keeps-adding-levels"><a class="header" href="#why-lean-keeps-adding-levels">Why Lean keeps adding levels</a></h2>
+<p>Letting the universe of types contain itself would permit dangerous
+self-reference:</p>
+<pre><code class="language-text">Not allowed
+
+Type 0 : Type 0
+</code></pre>
+<p>Lean places each universe in the next one instead:</p>
+<pre><code class="language-text">Type 0 : Type 1
+Type 1 : Type 2
+Type 2 : Type 3
+</code></pre>
+<ul>
+<li>This hierarchy prevents the logical paradoxes caused by <code>Type : Type</code>.</li>
+<li>Most ordinary programs stay in <code>Type 0</code>.</li>
+<li>Higher levels matter when code talks about types and universes themselves.</li>
+</ul>
+<h2 id="where-sort-fits"><a class="header" href="#where-sort-fits">Where <code>Sort</code> fits</a></h2>
+<p><code>Sort</code> is Lean’s built-in universe constructor. It is not an ordinary type
+alias or runtime function.</p>
+<pre><code class="language-text">Sort 0 = Prop
+Sort 1 = Type 0
+Sort 2 = Type 1
+Sort 3 = Type 2
+</code></pre>
+<p><code>Type u</code> is Lean’s friendlier notation for <code>Sort (u + 1)</code>:</p>
+<pre><code class="language-text">Sort u
+├── u = 0       → Prop
+└── u = n + 1   → Type n
+</code></pre>
+<p>The <code>u</code> in a declaration is a universe parameter. Lean resolves it while
+checking the program; it is not runtime data.</p>
+<h2 id="prop-is-the-special-center"><a class="header" href="#prop-is-the-special-center"><code>Prop</code> is the special center</a></h2>
+<pre><code class="language-text">P : Prop
+h : P
+
+P = a proposition/type
+h = a proof/value of P
+</code></pre>
+<ul>
+<li><code>Prop</code> is the universe used for logical statements.</li>
+<li>Its inhabitants include <code>True</code>, <code>False</code>, equalities, and bounds claims.</li>
+<li>The inhabitants of one proposition are its proofs.</li>
+<li>Lean treats proofs as proof-irrelevant: which proof we used does not change
+the truth of the proposition.</li>
+<li>That special logical behavior is why <code>Prop</code> is more than merely “the
+smallest ordinary data universe.”</li>
+</ul>
+<h2 id="back-to-decidableeq"><a class="header" href="#back-to-decidableeq">Back to <code>DecidableEq</code></a></h2>
+<pre><code class="language-lean">abbrev DecidableEq (α : Sort u) :=
+  (a b : α) → Decidable (a = b)
+</code></pre>
+<p>The universe annotation says:</p>
+<pre><code class="language-text">α : Sort u
+    └── α may come from Prop, Type 0, Type 1, or a higher level
+</code></pre>
+<p>For our early GPU models, the practical picture stays small:</p>
+<pre><code class="language-text">Nat       : Type 0
+Thread1D  : Type 0
+Array Nat : Type 0
+x &lt; size  : Prop
+</code></pre>
+<h2 id="pocket-model"><a class="header" href="#pocket-model">Pocket model</a></h2>
+<pre><code class="language-text">value → type → universe → next universe
+
+inner levels remain usable outside
+each universe itself lives one level up
+Prop is the special logical center
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="inspecting-generated-lean-code"><a class="header" href="#inspecting-generated-lean-code">Inspecting generated Lean code</a></h1>
+<h2 id="the-question"><a class="header" href="#the-question">The question</a></h2>
+<p>When Lean generates code for us, how do we find it and read it?</p>
+<pre><code class="language-text">source declaration
+      │
+      ▼
+macros + elaboration + deriving
+      │
+      ▼
+named declarations in Lean's environment
+      │
+      ▼
+discover with #synth → inspect with #print
+</code></pre>
+<p>For our first example:</p>
+<pre><code class="language-text">structure Thread1D ...
+deriving DecidableEq
+          │
+          ▼
+instDecidableEqThread1D
+          │
+          ▼
+instDecidableEqThread1D.decEq
+</code></pre>
+<h2 id="macro-expansion-versus-elaboration"><a class="header" href="#macro-expansion-versus-elaboration">Macro expansion versus elaboration</a></h2>
+<ul>
+<li>A <strong>macro</strong> transforms Lean syntax into other Lean syntax.</li>
+<li>An <strong>elaborator</strong> turns convenient syntax into checked declarations and core
+terms.</li>
+<li>A <strong>deriving handler</strong> inspects a declared type and adds new declarations.</li>
+<li><code>deriving DecidableEq</code> uses a deriving handler; it is not merely a textual
+macro.</li>
+</ul>
+<pre><code class="language-text">macro             Syntax → Syntax
+elaborator        Syntax → checked term / environment change
+deriving handler  declared type → generated definitions + instances
+</code></pre>
+<p>Lean does not provide one <code>cargo expand</code> command that reconstructs the whole
+module as a new <code>.lean</code> file. We inspect the declarations added to the
+environment instead.</p>
+<h2 id="step-1--ask-which-instance-lean-found"><a class="header" href="#step-1--ask-which-instance-lean-found">Step 1 — ask which instance Lean found</a></h2>
+<p>Put this after importing the module:</p>
+<pre><code class="language-lean">#synth DecidableEq LeanGpuLab.Lessons.ThreadIndex.Thread1D
+</code></pre>
+<p>Lean answers:</p>
+<pre><code class="language-text">LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D
+</code></pre>
+<ul>
+<li><code>#synth</code> runs typeclass-instance search.</li>
+<li>Its output gives us the generated declaration’s real name.</li>
+<li>Do not guess generated names when Lean can tell us directly.</li>
+</ul>
+<h2 id="step-2--inspect-the-instance"><a class="header" href="#step-2--inspect-the-instance">Step 2 — inspect the instance</a></h2>
+<pre><code class="language-lean">#print LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D
+</code></pre>
+<p>The important part of the output is:</p>
+<pre><code class="language-lean">def instDecidableEqThread1D : DecidableEq Thread1D :=
+  instDecidableEqThread1D.decEq
+</code></pre>
+<p>That tells us the instance is a small wrapper around another generated
+function named <code>.decEq</code>.</p>
+<h2 id="step-3--inspect-the-generated-function"><a class="header" href="#step-3--inspect-the-generated-function">Step 3 — inspect the generated function</a></h2>
+<pre><code class="language-lean">#print LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq
+</code></pre>
+<pre><code class="language-text">#synth DecidableEq Thread1D
+        │ reveals
+        ▼
+instDecidableEqThread1D
+        │ #print reveals
+        ▼
+instDecidableEqThread1D.decEq
+        │ #print reveals
+        ▼
+field-by-field implementation
+</code></pre>
+<p>If normal printing hides proof arguments behind <code>⋯</code>, use:</p>
+<pre><code class="language-lean">set_option pp.proofs true in
+#print LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq
+</code></pre>
+<p>This may expose generated proof-helper names rather than pleasant source code.</p>
+<h2 id="see-the-deriving-handlers-source-like-output"><a class="header" href="#see-the-deriving-handlers-source-like-output">See the deriving handler’s source-like output</a></h2>
+<p>Run the source module again with the specific deriving trace enabled:</p>
+<pre><code class="language-bash">lake env lean \
+  -Dtrace.Elab.Deriving.decEq=true \
+  LeanGpuLab/Lessons/ThreadIndex.lean
+</code></pre>
+<ul>
+<li>This shows the declarations while the <code>DecidableEq</code> handler generates them.</li>
+<li>It includes the proof branches that ordinary <code>#print</code> may abbreviate.</li>
+<li>It traces this deriver only; it is not a whole-module macro expansion.</li>
+</ul>
+<h2 id="what-print-actually-shows"><a class="header" href="#what-print-actually-shows">What <code>#print</code> actually shows</a></h2>
+<p>This is the post-elaboration definition shown by Lean, with only the line
+breaks adjusted:</p>
+<pre><code class="language-lean">def instDecidableEqThread1D.decEq :
+    (x x_1 : Thread1D) → Decidable (x = x_1) :=
+  fun x x_1 =&gt;
+    match x, x_1 with
+    | { blockIdx := a, threadIdx := a_1 },
+      { blockIdx := b, threadIdx := b_1 } =&gt;
+        if h : a = b then
+          h ▸
+            if h : a_1 = b_1 then
+              h ▸ isTrue ⋯
+            else
+              isFalse ⋯
+        else
+          isFalse ⋯
+</code></pre>
+<ul>
+<li><code>#print</code> displays the definition after elaboration.</li>
+<li><code>h ▸ value</code> transports or rewrites <code>value</code> using equality proof <code>h</code>.</li>
+<li><code>⋯</code> means the pretty-printer has hidden a proof term.</li>
+</ul>
+<p>The deriving trace looks different because it shows the source-like command
+before that command is elaborated:</p>
+<pre><code class="language-text">deriving handler emits `by subst h`
+                  │
+                  ▼ elaboration
+core equality transport
+                  │
+                  ▼ #print
+shown as `h ▸ ...`
+</code></pre>
+<h2 id="a-readable-source-like-equivalent"><a class="header" href="#a-readable-source-like-equivalent">A readable source-like equivalent</a></h2>
+<p>The following version gives the generated variables descriptive names and
+spells out the hidden proof branches. It is useful for understanding the
+algorithm, but it is not the literal text emitted by <code>#print</code>.</p>
+<pre><code class="language-lean">def instDecidableEqThread1D.decEq
+    (left right : Thread1D) : Decidable (left = right) :=
+  match left, right with
+  | Thread1D.mk leftBlock leftThread,
+    Thread1D.mk rightBlock rightThread =&gt;
+      if blockEqual : leftBlock = rightBlock then
+        by
+          subst blockEqual
+          exact
+            if threadEqual : leftThread = rightThread then
+              by
+                subst threadEqual
+                exact isTrue rfl
+            else
+              isFalse (by
+                intro structuresEqual
+                injection structuresEqual
+                apply threadEqual
+                assumption)
+      else
+        isFalse (by
+          intro structuresEqual
+          injection structuresEqual
+          apply blockEqual
+          assumption)
+</code></pre>
+<p>The structure is straightforward:</p>
+<pre><code class="language-text">unpack both Thread1D values
+        │
+        ▼
+compare blockIdx
+        ├── different → isFalse
+        ▼ equal
+compare threadIdx
+        ├── different → isFalse
+        ▼ equal
+isTrue rfl
+</code></pre>
+<h2 id="reusable-recipe"><a class="header" href="#reusable-recipe">Reusable recipe</a></h2>
+<p>For any generated typeclass instance:</p>
+<pre><code class="language-text">1. #synth WantedClass YourType
+2. copy the declaration name Lean prints
+3. #print that declaration
+4. follow and #print any helper names in its body
+5. enable the handler's trace only when #print is insufficient
+</code></pre>
+<p>The important rule:</p>
+<pre><code class="language-text">discover names with Lean → inspect declarations → follow generated helpers
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="dissecting-deriving-decidableeq"><a class="header" href="#dissecting-deriving-decidableeq">Dissecting <code>deriving DecidableEq</code></a></h1>
+<h2 id="starting-point"><a class="header" href="#starting-point">Starting point</a></h2>
+<pre><code class="language-lean">structure Thread1D where
+  blockIdx : Nat
+  threadIdx : Nat
+deriving Repr, DecidableEq
+</code></pre>
+<ul>
+<li><code>Thread1D</code> is an ordinary structure with two <code>Nat</code> fields.</li>
+<li><code>deriving DecidableEq</code> asks Lean to generate a decision procedure for
+equality between two <code>Thread1D</code> values.</li>
+</ul>
+<pre><code class="language-text">Thread1D + deriving DecidableEq
+                │
+                ▼
+Lean's DecidableEq deriving handler
+                │
+                ▼
+instDecidableEqThread1D.decEq
+                │
+                ▼
+(left right : Thread1D) → Decidable (left = right)
+</code></pre>
+<h2 id="the-function-type-being-implemented"><a class="header" href="#the-function-type-being-implemented">The function type being implemented</a></h2>
+<pre><code class="language-lean">abbrev DecidableEq (α : Sort u) :=
+  (a b : α) → Decidable (Eq a b)
+</code></pre>
+<ul>
+<li><code>DecidableEq α</code> is a transparent alias for a function type.</li>
+<li>A value of that type is the actual equality-decision function.</li>
+<li>For <code>Thread1D</code>, Lean must generate:</li>
+</ul>
+<pre><code class="language-lean">(left right : Thread1D) → Decidable (Eq left right)
+</code></pre>
+<p>Lean normally prints <code>Eq left right</code> as:</p>
+<pre><code class="language-lean">left = right
+</code></pre>
+<pre><code class="language-text">left = right       means       Eq left right
+¬(left = right)    means       Not (Eq left right)
+</code></pre>
+<h2 id="eq-states-equality-it-does-not-compare-fields"><a class="header" href="#eq-states-equality-it-does-not-compare-fields"><code>Eq</code> states equality; it does not compare fields</a></h2>
+<pre><code class="language-lean">inductive Eq : α → α → Prop where
+  | refl (a : α) : Eq a a
+</code></pre>
+<ul>
+<li><code>Eq a b</code> forms the proposition that <code>a</code> and <code>b</code> are identical.</li>
+<li><code>Eq.refl a</code> constructs a proof of <code>Eq a a</code>.</li>
+<li><code>rfl</code> is the convenient spelling normally used for that constructor.</li>
+<li>This definition contains no <code>Thread1D</code> or field-comparison algorithm.</li>
+</ul>
+<pre><code class="language-text">Eq a b                  statement to prove or refute
+Eq.refl a / rfl         proof that a equals itself
+DecidableEq derivation  generated algorithm that compares values
+</code></pre>
+<h2 id="decidable-carries-the-answer-and-its-proof"><a class="header" href="#decidable-carries-the-answer-and-its-proof"><code>Decidable</code> carries the answer and its proof</a></h2>
+<pre><code class="language-lean">class inductive Decidable (p : Prop) where
+  | isFalse (h : Not p) : Decidable p
+  | isTrue  (h : p)     : Decidable p
+</code></pre>
+<pre><code class="language-text">Decidable p
+├── isTrue  h    h : p
+└── isFalse h    h : Not p    where Not p := p → False
+</code></pre>
+<ul>
+<li><code>inductive</code> gives it two enum-like constructors.</li>
+<li><code>class</code> makes decisions available through typeclass-instance search.</li>
+<li><code>h</code> is the proof carried by the selected constructor.</li>
+<li>Lean’s Prelude exports <code>isTrue</code> and <code>isFalse</code>, so generated code may omit the
+<code>Decidable.</code> prefix.</li>
+</ul>
+<h2 id="where-the-real-comparison-happens"><a class="header" href="#where-the-real-comparison-happens">Where the real comparison happens</a></h2>
+<p>Lean generated:</p>
+<pre><code class="language-lean">def instDecidableEqThread1D.decEq :
+    (x x_1 : Thread1D) → Decidable (x = x_1) :=
+  fun x x_1 =&gt;
+    match x, x_1 with
+    | { blockIdx := a, threadIdx := a_1 },
+      { blockIdx := b, threadIdx := b_1 } =&gt;
+        if h : a = b then
+          h ▸
+            if h : a_1 = b_1 then
+              h ▸ isTrue
+                (instDecidableEqThread1D.decEq._proof_1 a a_1)
+            else
+              isFalse
+                (instDecidableEqThread1D.decEq._proof_2 a a_1 b_1 h)
+        else
+          isFalse
+            (instDecidableEqThread1D.decEq._proof_3 a a_1 b b_1 h)
+</code></pre>
+<p>The two comparisons are:</p>
+<pre><code class="language-lean">if h : a = b then          -- compare blockIdx
+if h : a_1 = b_1 then      -- compare threadIdx
+</code></pre>
+<ul>
+<li>Each field is a <code>Nat</code>.</li>
+<li>Lean uses <code>Nat</code>’s existing <code>DecidableEq</code> instance to decide each field
+equality.</li>
+<li>The <code>if h : proposition then</code> form binds:
+<ul>
+<li><code>h : proposition</code> in the true branch;</li>
+<li><code>h : Not proposition</code> in the false branch.</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-text">unpack both structures
+        │
+        ▼
+compare blockIdx using Nat's DecidableEq
+        ├── different → isFalse proof_3
+        ▼ equal
+compare threadIdx using Nat's DecidableEq
+        ├── different → isFalse proof_2
+        ▼ equal
+isTrue proof_1
+</code></pre>
+<h2 id="what-h--does"><a class="header" href="#what-h--does">What <code>h ▸</code> does</a></h2>
+<p><code>h ▸ value</code> rewrites or transports <code>value</code> using equality proof <code>h</code>.</p>
+<pre><code class="language-text">block fields equal
+      │ h ▸
+      ▼
+thread fields equal
+      │ h ▸
+      ▼
+both structures now have identical fields
+      │
+      ▼
+rfl proves the complete structures are equal
+</code></pre>
+<h2 id="the-three-generated-proof-helpers"><a class="header" href="#the-three-generated-proof-helpers">The three generated proof helpers</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Helper</th><th>Branch</th><th>What it proves</th></tr>
+</thead>
+<tbody>
+<tr><td><code>_proof_1</code></td><td>both fields match</td><td>the structure equals itself, using <code>rfl</code></td></tr>
+<tr><td><code>_proof_2</code></td><td>thread fields differ</td><td>complete structure equality would contradict that difference</td></tr>
+<tr><td><code>_proof_3</code></td><td>block fields differ</td><td>complete structure equality would contradict that difference</td></tr>
+</tbody>
+</table>
+</div>
+<p>Here are the complete generated declarations for reference.</p>
+<h3 id="_proof_1--both-fields-match"><a class="header" href="#_proof_1--both-fields-match"><code>_proof_1</code> — both fields match</a></h3>
+<pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_1 :
+    ∀ (a a_1 : Nat),
+      { blockIdx := a, threadIdx := a_1 } =
+      { blockIdx := a, threadIdx := a_1 } :=
+  fun a a_1 =&gt; rfl
+</code></pre>
+<ul>
+<li>The parameters are <code>a</code> and <code>a_1</code>.</li>
+<li>Applying the theorem to both parameters returns a proof that the complete
+<code>Thread1D</code> value equals itself.</li>
+</ul>
+<h3 id="_proof_2--the-thread-fields-differ"><a class="header" href="#_proof_2--the-thread-fields-differ"><code>_proof_2</code> — the thread fields differ</a></h3>
+<pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_2 :
+    ∀ (a a_1 b : Nat),
+      ¬a_1 = b →
+      { blockIdx := a, threadIdx := a_1 } =
+      { blockIdx := a, threadIdx := b } →
+      False :=
+  fun a a_1 b h n =&gt;
+    LeanGpuLab.Lessons.ThreadIndex.Thread1D.mk.noConfusion n
+      fun blockIdx_eq threadIdx_eq =&gt; h threadIdx_eq
+</code></pre>
+<p>The generated lambda leaves inferred types implicit. Read its outer lambda as:</p>
+<pre><code class="language-lean">fun (a a_1 b : Nat)
+    (h : ¬(a_1 = b))
+    (n :
+      { blockIdx := a, threadIdx := a_1 } =
+      { blockIdx := a, threadIdx := b }) =&gt;
+  ...
+</code></pre>
+<ul>
+<li><code>n</code> is a proof value whose type says the complete structures are equal.</li>
+<li><code>noConfusion n</code> supplies the inner lambda with proofs that corresponding
+constructor fields are equal:</li>
+</ul>
+<pre><code class="language-text">n: Thread1D.mk a a₁ = Thread1D.mk a b
+                    │
+                    ▼
+              noConfusion
+                    │
+                    ├── blockIdx_eq
+                    └── threadIdx_eq : a₁ = b
+</code></pre>
+<p>The last expression is ordinary function application. Negation is a function
+type:</p>
+<pre><code class="language-lean">h            : ¬(a_1 = b)       -- the proof value h
+             = (a_1 = b) → False
+threadIdx_eq : a_1 = b
+
+h threadIdx_eq : False
+</code></pre>
+<p><code>blockIdx_eq</code> is unused here; the contradictory thread-field equality is enough.</p>
+<h3 id="_proof_3--the-block-fields-differ"><a class="header" href="#_proof_3--the-block-fields-differ"><code>_proof_3</code> — the block fields differ</a></h3>
+<pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_3 :
+    ∀ (a a_1 b b_1 : Nat),
+      ¬a = b →
+      { blockIdx := a, threadIdx := a_1 } =
+      { blockIdx := b, threadIdx := b_1 } →
+      False :=
+  fun a a_1 b b_1 h n =&gt;
+    LeanGpuLab.Lessons.ThreadIndex.Thread1D.mk.noConfusion n
+      fun blockIdx_eq threadIdx_eq =&gt; h blockIdx_eq
+</code></pre>
+<ul>
+<li><code>h</code> says the two block fields are not equal.</li>
+<li>Assuming the structures are equal would imply equal block fields.</li>
+<li>That contradiction produces the <code>Not (Eq x x_1)</code> required by <code>isFalse</code>.</li>
+</ul>
+<p>The result is always correctly typed:</p>
+<pre><code class="language-text">isTrue  proof_1    : Decidable (Eq x x_1)
+isFalse proof_2    : Decidable (Eq x x_1)
+isFalse proof_3    : Decidable (Eq x x_1)
+</code></pre>
+<h2 id="how-we-found-the-generated-code"><a class="header" href="#how-we-found-the-generated-code">How we found the generated code</a></h2>
+<pre><code class="language-lean">#synth DecidableEq Thread1D
+</code></pre>
+<p>revealed:</p>
+<pre><code class="language-text">instDecidableEqThread1D
+</code></pre>
+<p>Then we followed the generated declarations:</p>
+<pre><code class="language-text">#synth DecidableEq Thread1D
+        │
+        ▼
+#print instDecidableEqThread1D
+        │
+        ▼
+#print instDecidableEqThread1D.decEq
+</code></pre>
+<p>To expose hidden proof-helper names:</p>
+<pre><code class="language-lean">set_option pp.proofs true in
+#print instDecidableEqThread1D.decEq
+</code></pre>
+<p>For the complete inspection workflow, see
+<a href="#inspecting-generated-lean-code">Inspecting generated Lean code</a>.</p>
+<h2 id="pocket-summary"><a class="header" href="#pocket-summary">Pocket summary</a></h2>
+<pre><code class="language-text">Eq                    states equality
+Decidable             carries proof of yes or no
+DecidableEq α         names the required decision-function type
+deriving DecidableEq  generates the field-by-field implementation
+</code></pre>
+<ul>
+<li>The comparison logic comes from the deriving handler.</li>
+<li>Field decisions come from the fields’ existing <code>DecidableEq</code> instances.</li>
+<li>Successful and unsuccessful results both carry checked proofs.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="part-2--later-connect-the-proofs-to-cuda-oxide"><a class="header" href="#part-2--later-connect-the-proofs-to-cuda-oxide">Part 2 — later connect the proofs to cuda-oxide</a></h1>
+<h2 id="the-destination"><a class="header" href="#the-destination">The destination</a></h2>
+<ul>
+<li>Rust remains the normal cuda-oxide kernel language.</li>
+<li>cuda-oxide owns the compiler IR.</li>
+<li>Lean receives a small, deterministic view of that IR.</li>
+<li>The existing NVVM/PTX path stays intact.</li>
+</ul>
+<a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/cuda-oxide-destination.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diagrams/cuda-oxide-destination.share-card.dark.png">
+    <img src="diagrams/cuda-oxide-destination.share-card.light.png" alt="cuda-oxide compiler data flow with a read-only KernelIR branch from post-mem2reg SSA to Lean proofs" width="1200">
+  </picture>
+</a>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/cuda-oxide-destination.html">Open the interactive Archify diagram</a> · <a href="diagrams/cuda-oxide-destination.dataflow.json">View its typed source</a></p>
+<h2 id="we-get-there-in-two-small-bridges"><a class="header" href="#we-get-there-in-two-small-bridges">We get there in two small bridges</a></h2>
+<h3 id="bridge-a--prove-that-the-pieces-connect"><a class="header" href="#bridge-a--prove-that-the-pieces-connect">Bridge A — prove that the pieces connect</a></h3>
+<ul>
+<li>Let Lean construct and verify one tiny KernelIR program.</li>
+<li>Serialize it through a small, versioned format.</li>
+<li>A Rust adapter builds cuda-oxide’s standalone <code>CodegenModule</code>.</li>
+<li>Compile the same vector-add kernel to PTX.</li>
+</ul>
+<pre><code class="language-text">Lean KernelIR + theorem
+          │
+          ▼
+versioned fixture → Rust adapter → cuda-oxide-codegen → PTX
+</code></pre>
+<ul>
+<li>This is the quickest end-to-end experiment.</li>
+<li>It does <strong>not</strong> yet prove that the Rust adapter or PTX lowering preserves meaning.</li>
+</ul>
+<h3 id="bridge-b--make-rust-kernels-the-source"><a class="header" href="#bridge-b--make-rust-kernels-the-source">Bridge B — make Rust kernels the source</a></h3>
+<ul>
+<li>Export the supported subset from compiler-owned MIR.</li>
+<li>Run Lean as a proof sidecar or build gate.</li>
+<li>Bind the proof result to the exact IR using a deterministic hash.</li>
+</ul>
+<pre><code class="language-text">Rust kernel
+    │
+    ▼
+canonical MIR ───────────────→ PTX
+    │
+    └→ KernelIR + hash → Lean check → certificate for that hash
+</code></pre>
+<h2 id="kernelir-v0"><a class="header" href="#kernelir-v0">KernelIR v0</a></h2>
+<p>Keep the first version deliberately boring:</p>
+<pre><code class="language-text">Kernel
+├── parameters
+├── named buffers + lengths
+└── body
+    ├── local assignment
+    ├── global load / store
+    ├── integer arithmetic / comparison
+    ├── if
+    └── sequence
+</code></pre>
+<ul>
+<li><strong>Include:</strong> 1D block/thread IDs, bounded buffers, locals, loads, stores, <code>if</code>, sequencing.</li>
+<li><strong>Use first:</strong> exact indices and integer elements.</li>
+<li><strong>Before machine claims:</strong> refine indices and values to fixed-width <code>BitVec</code> operations.</li>
+<li><strong>Reject:</strong> any operation outside the supported subset.</li>
+</ul>
+<p>🚧 Not in v0:</p>
+<ul>
+<li>floats;</li>
+<li>raw pointer aliasing;</li>
+<li>loops and calls;</li>
+<li>shared memory and barriers;</li>
+<li>atomics, warp operations, inline PTX, or weak memory.</li>
+</ul>
+<h2 id="where-the-exporter-belongs"><a class="header" href="#where-the-exporter-belongs">Where the exporter belongs</a></h2>
+<p>The useful future checkpoint is cuda-oxide’s post-<code>mem2reg</code> <code>dialect-mir</code>, in SSA form, following its <a href="https://nvlabs.github.io/cuda-oxide/compiler/architecture-overview.html">documented compiler pipeline</a>:</p>
+<a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/mir-export-checkpoint.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="diagrams/mir-export-checkpoint.share-card.dark.png">
+    <img src="diagrams/mir-export-checkpoint.share-card.light.png" alt="Compiler data flow showing the KernelIR observer after mem2reg and before annotated loop unrolling" width="1200">
+  </picture>
+</a>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/mir-export-checkpoint.html">Open the interactive Archify diagram</a> · <a href="diagrams/mir-export-checkpoint.dataflow.json">View its typed source</a></p>
+<ul>
+<li>Observe after <code>mem2reg</code> has promoted imported memory operations into clear SSA data flow.</li>
+<li>Observe before annotated loop unrolling and lowering transform the compiler-owned IR.</li>
+<li>Use a dedicated read-only observer—not a debug dump or mutating pass.</li>
+<li>Fail closed when that checkpoint is unavailable; cuda-oxide’s full debug mode skips <code>mem2reg</code> and loop unrolling.</li>
+</ul>
+<h2 id="milestones"><a class="header" href="#milestones">Milestones</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Step</th><th>Artifact</th><th>Done when</th></tr>
+</thead>
+<tbody>
+<tr><td>I0 · Schema</td><td>versioned KernelIR v0</td><td>decoder rejects every unsupported construct</td></tr>
+<tr><td>I1 · Lean frontend</td><td>one verified vector add</td><td>Lean evaluator and theorem agree on all indices</td></tr>
+<tr><td>I2 · PTX adapter</td><td>KernelIR → <code>CodegenModule</code></td><td>emitted PTX passes <code>ptxas</code> validation</td></tr>
+<tr><td>I3 · MIR exporter</td><td>cuda-oxide MIR → KernelIR</td><td>golden vector-add IR matches exactly</td></tr>
+<tr><td>I4 · Proof gate</td><td>IR hash + Lean check</td><td>changing the IR invalidates the old result</td></tr>
+<tr><td>I5 · Confidence</td><td>differential tests</td><td>small Lean, CPU, and GPU executions agree</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="trust-boundary"><a class="header" href="#trust-boundary">Trust boundary</a></h2>
+<pre><code class="language-text">✅ Lean theorem describes the decoded KernelIR semantics.
+🧪 Golden and differential tests exercise translations.
+⚠ MIR → KernelIR exporter is initially trusted.
+⚠ KernelIR → cuda-oxide MIR is initially trusted.
+⚠ cuda-oxide lowering, LLVM, PTX tools, driver, and hardware are trusted.
+🚧 Floats, barriers, atomics, and weak memory are not modeled in v0.
+</code></pre>
+<ul>
+<li>Until refinement proofs exist, say <strong>“verified KernelIR”</strong>.</li>
+<li>Do not say <strong>“verified Rust-to-PTX compiler.”</strong></li>
+</ul>
+<h2 id="design-rules"><a class="header" href="#design-rules">Design rules</a></h2>
+<ul>
+<li>Fail closed: unsupported input is an error, never <code>unknown</code> or a no-op.</li>
+<li>Keep serialization stable, ordered, versioned, and source-located.</li>
+<li>Prove one-thread results separately from whole-grid noninterference.</li>
+<li>Give global and shared memory different address identities.</li>
+<li>Keep cLean as inspiration only; its audited source has no visible reuse license.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="diagram-sources-and-maintenance"><a class="header" href="#diagram-sources-and-maintenance">Diagram sources and maintenance</a></h1>
+<p>Each diagram is kept as typed <a href="https://github.com/tt-a1i/archify">Archify</a> JSON, a self-contained interactive HTML artifact, and a 1200 × 630 share card for Markdown.</p>
+<p><a href="https://nihalpasham.github.io/lean-gpu-lab-book/diagrams/">Browse the interactive diagram gallery</a>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Diagram</th><th>Archify style</th><th>Why it fits</th></tr>
+</thead>
+<tbody>
+<tr><td>Project overview</td><td>Data flow</td><td>Follows one idea as it becomes a model, theorem, and compiler input.</td></tr>
+<tr><td>Project roadmap</td><td>Workflow</td><td>Separates the learning and integration phases while showing their handoff.</td></tr>
+<tr><td>Learning loop</td><td>Workflow</td><td>Shows the repeatable work performed during one lesson.</td></tr>
+<tr><td>cuda-oxide destination</td><td>Data flow</td><td>Tracks compiler IR into the existing PTX path and future proof path.</td></tr>
+<tr><td>MIR export checkpoint</td><td>Data flow</td><td>Makes the post-<code>mem2reg</code> fork and its consumers explicit.</td></tr>
+<tr><td>Lean toolchain</td><td>Workflow</td><td>Shows which tool acts at each build step and what it emits.</td></tr>
+</tbody>
+</table>
+</div>
+<p>No current diagram is a timed interaction between named participants or a true state machine, so using sequence or lifecycle styling here would imply semantics the plan does not have.</p>
+<h2 id="regenerate-an-artifact"><a class="header" href="#regenerate-an-artifact">Regenerate an artifact</a></h2>
+<p>Set <code>ARCHIFY_CLI</code> to the installed skill’s <code>bin/archify.mjs</code>, then run:</p>
+<pre><code class="language-bash">node "$ARCHIFY_CLI" validate dataflow \
+  docs/diagrams/project-overview.dataflow.json \
+  --quality showcase
+node "$ARCHIFY_CLI" deliver dataflow \
+  docs/diagrams/project-overview.dataflow.json \
+  docs/diagrams/project-overview.html \
+  --quality showcase
+</code></pre>
+<p>Change the filenames and diagram type for the other artifacts. Refresh all light- and dark-theme Markdown images with the canonical viewer export path:</p>
+<pre><code class="language-bash">node scripts/export-archify-share-cards.mjs --theme both \
+  docs/diagrams/{cuda-oxide-destination,lean-toolchain,learning-loop,mir-export-checkpoint,project-overview,project-roadmap}.html
+</code></pre>
+<p>The exporter checks Archify’s canonical receipt, PNG signature, byte count, and exact 1200 × 630 dimensions before replacing an image.</p>
+<p>The custom <code>docs/type-universes.svg</code> remains as-is: it is a spatial teaching illustration rather than a component, process, interaction, pipeline, or state diagram.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

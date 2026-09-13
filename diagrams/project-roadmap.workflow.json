@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Lean GPU Lab Roadmap",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "verification", "label": "Questions, models, and proofs" },
+    { "id": "compiler", "label": "cuda-oxide output" }
+  ],
+  "phases": [
+    { "id": "learn_lean", "label": "Part 1 · learn Lean", "fromCol": 0, "toCol": 2, "variant": "emphasis" },
+    { "id": "integrate", "label": "Part 2 · integrate", "fromCol": 3, "toCol": 4, "variant": "dashed" }
+  ],
+  "mainPath": [
+    "gpu_questions",
+    "models",
+    "proofs",
+    "kernel_ir",
+    "proof_gate"
+  ],
+  "semanticChecks": {
+    "allowedRoots": ["gpu_questions"],
+    "allowedTerminals": ["proof_gate", "cuda_oxide_ptx"],
+    "requiredPaths": [
+      { "from": "gpu_questions", "to": "proof_gate" },
+      { "from": "gpu_questions", "to": "cuda_oxide_ptx" }
+    ]
+  },
+  "nodes": [
+    { "id": "gpu_questions", "lane": "verification", "col": 0, "type": "external", "label": "GPU questions" },
+    { "id": "models", "lane": "verification", "col": 1, "type": "backend", "label": "Models" },
+    { "id": "proofs", "lane": "verification", "col": 2, "type": "security", "label": "Proofs" },
+    { "id": "kernel_ir", "lane": "verification", "col": 3, "type": "backend", "label": "Tiny KernelIR" },
+    { "id": "proof_gate", "lane": "verification", "col": 4, "type": "security", "label": "Lean proof gate", "width": 124 },
+    { "id": "cuda_oxide_ptx", "lane": "compiler", "col": 4, "type": "backend", "label": "cuda-oxide → PTX", "width": 132 }
+  ],
+  "edges": [
+    { "from": "gpu_questions", "to": "models" },
+    { "from": "models", "to": "proofs" },
+    { "from": "proofs", "to": "kernel_ir" },
+    { "from": "kernel_ir", "to": "proof_gate" },
+    { "from": "kernel_ir", "to": "cuda_oxide_ptx", "role": "branch", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Now",
+      "items": ["Make Lean ordinary by proving small GPU facts"]
+    },
+    {
+      "dot": "violet",
+      "title": "Later",
+      "items": ["Give those proofs a precise cuda-oxide IR to describe"]
+    },
+    {
+      "dot": "amber",
+      "title": "Explicit boundary",
+      "items": ["Do not claim end-to-end verification of Rust, LLVM, PTX, or GPU execution"]
+    }
+  ]
+}

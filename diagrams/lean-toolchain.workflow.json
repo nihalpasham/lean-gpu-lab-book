@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Lean Toolchain Workflow",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "editor", "label": "Editor" },
+    { "id": "orchestration", "label": "Toolchain and project" },
+    { "id": "lean_compiler", "label": "Lean compiler" },
+    { "id": "native_path", "label": "Native executable path" }
+  ],
+  "phases": [
+    { "id": "select", "label": "Select toolchain", "fromCol": 0, "toCol": 1 },
+    { "id": "compile", "label": "Manage and compile", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "emit", "label": "Emit outputs", "fromCol": 4, "toCol": 5 }
+  ],
+  "mainPath": [
+    "cursor_extension",
+    "elan",
+    "lake",
+    "lean",
+    "generated_c",
+    "leanc",
+    "native_executable"
+  ],
+  "semanticChecks": {
+    "allowedRoots": ["cursor_extension"],
+    "allowedTerminals": ["olean_modules", "native_executable"],
+    "requiredPaths": [
+      { "from": "cursor_extension", "to": "olean_modules" },
+      { "from": "cursor_extension", "to": "native_executable" }
+    ]
+  },
+  "nodes": [
+    { "id": "cursor_extension", "lane": "editor", "col": 0, "type": "frontend", "label": "Cursor + Lean extension", "width": 180 },
+    { "id": "elan", "lane": "orchestration", "col": 1, "type": "backend", "label": "Elan chooses a toolchain", "width": 188 },
+    { "id": "lake", "lane": "orchestration", "col": 2, "type": "backend", "label": "Lake manages the project", "width": 188 },
+    { "id": "lean", "lane": "lean_compiler", "col": 3, "type": "backend", "label": "Lean checks + compiles modules", "width": 228 },
+    { "id": "olean_modules", "lane": "lean_compiler", "col": 4, "type": "database", "label": ".olean modules" },
+    { "id": "generated_c", "lane": "native_path", "col": 3, "type": "backend", "label": "generated C" },
+    { "id": "leanc", "lane": "native_path", "col": 4, "type": "backend", "label": "leanc" },
+    { "id": "native_executable", "lane": "native_path", "col": 5, "type": "backend", "label": "native executable", "width": 140 }
+  ],
+  "edges": [
+    { "from": "cursor_extension", "to": "elan" },
+    { "from": "elan", "to": "lake", "label": "reads lean-toolchain" },
+    { "from": "lake", "to": "lean", "label": "reads lakefile.toml" },
+    { "from": "lean", "to": "olean_modules", "role": "branch" },
+    { "from": "lean", "to": "generated_c" },
+    { "from": "generated_c", "to": "leanc" },
+    { "from": "leanc", "to": "native_executable" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Toolchain selection",
+      "items": ["Elan chooses the project toolchain using lean-toolchain"]
+    },
+    {
+      "dot": "violet",
+      "title": "Project build",
+      "items": ["Lake reads lakefile.toml and asks Lean to check and compile modules"]
+    },
+    {
+      "dot": "emerald",
+      "title": "Compiler outputs",
+      "items": ["Lean produces .olean modules and generated C", "leanc turns generated C into a native executable"]
+    }
+  ]
+}

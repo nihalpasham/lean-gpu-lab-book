@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "One Lean Lesson, Repeated",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "lesson", "label": "Learning workflow" }
+  ],
+  "phases": [
+    { "id": "understand", "label": "Understand", "fromCol": 0, "toCol": 1 },
+    { "id": "verify", "label": "Verify", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "refine", "label": "Refine", "fromCol": 4, "toCol": 4 }
+  ],
+  "mainPath": [
+    "ask",
+    "model",
+    "prove",
+    "break",
+    "improve"
+  ],
+  "nodes": [
+    { "id": "ask", "lane": "lesson", "col": 0, "type": "external", "label": "Ask a GPU question", "width": 150 },
+    { "id": "model", "lane": "lesson", "col": 1, "type": "backend", "label": "Define a tiny model", "width": 148 },
+    { "id": "prove", "lane": "lesson", "col": 2, "type": "security", "label": "Prove one fact", "width": 124 },
+    { "id": "break", "lane": "lesson", "col": 3, "type": "security", "label": "Try to break it", "width": 128 },
+    { "id": "improve", "lane": "lesson", "col": 4, "type": "backend", "label": "Improve the model", "width": 144 }
+  ],
+  "edges": [
+    { "id": "questionToModel", "from": "ask", "to": "model" },
+    { "id": "modelToProof", "from": "model", "to": "prove" },
+    { "id": "proofToCounterexample", "from": "prove", "to": "break" },
+    { "id": "counterexampleToRevision", "from": "break", "to": "improve" },
+    {
+      "id": "revisionToQuestion",
+      "from": "improve",
+      "to": "ask",
+      "label": "next question",
+      "variant": "emphasis",
+      "role": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Learning rhythm",
+      "items": [
+        "Each pass ends with a checked theorem and a nearby counterexample",
+        "The counterexample exposes the next modeling question"
+      ]
+    }
+  ]
+}
