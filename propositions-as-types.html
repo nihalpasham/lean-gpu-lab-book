@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Lean GPU Lab</title>
-        <base href="/lean-gpu-lab-book/">
+        <title>Propositions as types - Lean GPU Lab</title>
 
 
         <!-- Custom HTML head -->
@@ -175,14 +174,120 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="propositions-as-types--reading-p--prop-and-h--p"><a class="header" href="#propositions-as-types--reading-p--prop-and-h--p">Propositions as types — reading <code>p : Prop</code> and <code>h : p</code></a></h1>
+<h2 id="the-whole-idea"><a class="header" href="#the-whole-idea">The whole idea</a></h2>
+<p>As a first mental model, read <code>Prop</code> as the collection of all propositions:</p>
+<pre><code class="language-text">Prop : Type
+└── p : Prop      one proposition, which is also a type
+    └── h : p     one proof/value of that proposition
+</code></pre>
+<p>More precisely, <code>Prop</code> is Lean’s <strong>universe</strong> of propositions, not a runtime
+collection.</p>
+<p>Read <code>p</code> in both directions:</p>
+<ul>
+<li>Looking up, <code>p</code> is a term/value of <code>Prop</code>: a proposition, not a proof.</li>
+<li>Looking down, <code>p</code> is the type of <code>h</code>, and <code>h</code> is a proof/value of <code>p</code>.</li>
+</ul>
+<h2 id="one-concrete-example"><a class="header" href="#one-concrete-example">One concrete example</a></h2>
+<pre><code class="language-lean">def p : Prop := (2 : Nat) + 2 = 4
+
+theorem h : p := rfl
+</code></pre>
+<p>Substituting the definition of <code>p</code> makes the second line read:</p>
+<pre><code class="language-lean">theorem h : (2 : Nat) + 2 = 4 := rfl
+</code></pre>
+<p>So the names refer to different things:</p>
+<pre><code class="language-text">p = the proposition “2 + 2 = 4”
+h = a proof of that proposition
+</code></pre>
+<p><code>p</code> is not <code>h</code>, just as <code>Nat</code> is not <code>3</code>.</p>
+<h2 id="why-p-can-appear-after-a-colon"><a class="header" href="#why-p-can-appear-after-a-colon">Why <code>p</code> can appear after a colon</a></h2>
+<p>The right-hand side of <code>:</code> is still a type in Lean:</p>
+<pre><code class="language-lean">h : p
+</code></pre>
+<p>This is valid because every proposition is a type. Here <code>p</code> is one such
+proposition/type.</p>
+<p>The same pattern appears with ordinary data:</p>
+<pre><code class="language-text">Nat : Type          p : Prop
+3   : Nat           h : p
+</code></pre>
+<ul>
+<li><code>Nat</code> is a term in the universe <code>Type</code>, and it is the type of <code>3</code>.</li>
+<li><code>p</code> is a term in the universe <code>Prop</code>, and it is the type of <code>h</code>.</li>
+</ul>
+<p>Lean uses the word <strong>term</strong> at both levels. A term whose type is a universe such
+as <code>Type</code> or <code>Prop</code> is itself a type. This does not mean that an arbitrary
+runtime value can be used as a type.</p>
+<h2 id="read-decidable-with-that-model"><a class="header" href="#read-decidable-with-that-model">Read <code>Decidable</code> with that model</a></h2>
+<pre><code class="language-lean">class inductive Decidable (p : Prop) where
+  | isFalse (h : Not p) : Decidable p
+  | isTrue  (h : p)     : Decidable p
+</code></pre>
+<p>Read each binder directly:</p>
+<ul>
+<li><code>(p : Prop)</code> chooses one proposition/type.</li>
+<li><code>(h : p)</code> supplies a proof of that proposition.</li>
+<li><code>(h : Not p)</code> supplies a proof that the proposition leads to a
+contradiction.</li>
+<li><code>Decidable p</code> is the type of a proved yes-or-no answer about <code>p</code>.</li>
+</ul>
+<pre><code class="language-text">Decidable p
+├── isTrue  h    with h : p
+└── isFalse h    with h : Not p
+</code></pre>
+<p>The nearest surface Rust reading is <code>Decidable&lt;P&gt;</code>. Rust’s <code>P</code> is a type
+parameter; Lean’s <code>p</code> is a term of <code>Prop</code> and is itself a type. The parameter
+position looks similar, but ordinary Rust has no built-in
+proposition/proof relationship.</p>
+<h2 id="what-changes-across-programming-languages"><a class="header" href="#what-changes-across-programming-languages">What changes across programming languages</a></h2>
+<p>This distinction is not “functional versus non-functional,” and it is not a
+measure of how strongly typed a language is. It comes from the kind of type
+system the language has.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Language</th><th>Usual relationship between types and values</th></tr>
+</thead>
+<tbody>
+<tr><td>Rust, Java, C#</td><td>Keep the type and value levels separate in ordinary code</td></tr>
+<tr><td>Haskell</td><td>Usually keeps terms and types separate; kinds and extensions add type-level programming</td></tr>
+<tr><td>Lean, Agda, Coq, Idris</td><td>Use dependent types and universes; types are terms, and terms can occur inside types</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rust’s const generics allow a restricted form of values appearing in types:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Buffer&lt;const N: usize&gt; {
+    bytes: [u8; N],
+}
+<span class="boring">}</span></code></pre>
+<p>Here <code>N</code> affects a type, but this is much narrower than Lean’s dependent type
+system. Rust still does not let an arbitrary proposition term become the type
+of its proofs.</p>
+<p>Haskell is functional but ordinarily maintains a term/type split. Lean is also
+functional, but the relevant feature here is <strong>dependent typing</strong>, not
+functional programming itself.</p>
+<h2 id="pocket-model"><a class="header" href="#pocket-model">Pocket model</a></h2>
+<pre><code class="language-text">Prop       the universe of propositions
+p : Prop   one proposition/type
+h : p      one proof/value of p
+</code></pre>
+<p>For the larger hierarchy around <code>Prop</code>, continue to <a href="type-universes.html">Type
+universes</a>. To follow this idea through equality decisions,
+see <a href="deriving-decidable-eq.html">Dissecting <code>deriving DecidableEq</code></a>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="reading-a-lean-definition.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
+                            <a rel="next prefetch" href="type-universes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -190,7 +295,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="reading-a-lean-definition.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
+                    <a rel="next prefetch" href="type-universes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>

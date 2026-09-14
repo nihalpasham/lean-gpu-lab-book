@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ea176387.js";
+            window.path_to_searchindex_js = "searchindex-1fab6641.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-1f88d54c.js"></script>
+        <script src="toc-4c38a7d6.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -181,71 +181,129 @@
   threadIdx : Nat
 deriving Repr, DecidableEq
 </code></pre>
-<ul>
-<li><code>Thread1D</code> is an ordinary structure with two <code>Nat</code> fields.</li>
-<li><code>deriving DecidableEq</code> asks Lean to generate a decision procedure for
-equality between two <code>Thread1D</code> values.</li>
-</ul>
-<pre><code class="language-text">Thread1D + deriving DecidableEq
-                │
-                ▼
-Lean's DecidableEq deriving handler
-                │
-                ▼
-instDecidableEqThread1D.decEq
-                │
-                ▼
-(left right : Thread1D) → Decidable (left = right)
-</code></pre>
-<h2 id="the-function-type-being-implemented"><a class="header" href="#the-function-type-being-implemented">The function type being implemented</a></h2>
-<pre><code class="language-lean">abbrev DecidableEq (α : Sort u) :=
-  (a b : α) → Decidable (Eq a b)
-</code></pre>
-<ul>
-<li><code>DecidableEq α</code> is a transparent alias for a function type.</li>
-<li>A value of that type is the actual equality-decision function.</li>
-<li>For <code>Thread1D</code>, Lean must generate:</li>
-</ul>
+<p>The rough Rust counterpart is familiar:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug, PartialEq, Eq)]
+struct Thread1D {
+    block_idx: usize,
+    thread_idx: usize,
+}
+<span class="boring">}</span></code></pre>
+<p>Rust’s <code>PartialEq</code> derive and Lean’s <code>DecidableEq</code> derive both compare fields.
+Rust’s <code>PartialEq::eq</code> returns a <code>bool</code>; Lean returns a decision carrying proof
+that equality is true or false. Here <code>usize</code> is only illustrative: unlike
+<code>Nat</code>, it has a fixed machine width.</p>
+<h2 id="read-the-target-from-the-inside-out"><a class="header" href="#read-the-target-from-the-inside-out">Read the target from the inside out</a></h2>
+<p>For <code>Thread1D</code>, Lean generates a value of this type:</p>
 <pre><code class="language-lean">(left right : Thread1D) → Decidable (Eq left right)
 </code></pre>
-<p>Lean normally prints <code>Eq left right</code> as:</p>
-<pre><code class="language-lean">left = right
+<p>Build it one layer at a time:</p>
+<pre><code class="language-text">Eq left right
+    │ the equality proposition
+    ▼
+Decidable (Eq left right)
+    │ a proved yes-or-no answer
+    ▼
+(left right : Thread1D) → Decidable (Eq left right)
+    │ a function that produces that answer for every pair
+    ▼
+DecidableEq Thread1D
+    the abbreviation for the complete function type
 </code></pre>
-<pre><code class="language-text">left = right       means       Eq left right
-¬(left = right)    means       Not (Eq left right)
-</code></pre>
-<h2 id="eq-states-equality-it-does-not-compare-fields"><a class="header" href="#eq-states-equality-it-does-not-compare-fields"><code>Eq</code> states equality; it does not compare fields</a></h2>
-<pre><code class="language-lean">inductive Eq : α → α → Prop where
+<h2 id="1-eq-is-the-claim-not-the-comparison"><a class="header" href="#1-eq-is-the-claim-not-the-comparison">1. <code>Eq</code> is the claim, not the comparison</a></h2>
+<pre><code class="language-lean">inductive Eq : {α : Sort u} → α → α → Prop where
   | refl (a : α) : Eq a a
 </code></pre>
 <ul>
-<li><code>Eq a b</code> forms the proposition that <code>a</code> and <code>b</code> are identical.</li>
-<li><code>Eq.refl a</code> constructs a proof of <code>Eq a a</code>.</li>
-<li><code>rfl</code> is the convenient spelling normally used for that constructor.</li>
-<li>This definition contains no <code>Thread1D</code> or field-comparison algorithm.</li>
+<li><code>Eq a b</code> is the proposition that <code>a</code> and <code>b</code> are equal.</li>
+<li>Lean normally writes it as <code>a = b</code>.</li>
+<li><code>Eq.refl a</code>, usually written <code>rfl</code>, proves that <code>a = a</code>.</li>
+<li><code>Eq</code> itself contains no field-comparison algorithm.</li>
 </ul>
-<pre><code class="language-text">Eq a b                  statement to prove or refute
-Eq.refl a / rfl         proof that a equals itself
-DecidableEq derivation  generated algorithm that compares values
-</code></pre>
-<h2 id="decidable-carries-the-answer-and-its-proof"><a class="header" href="#decidable-carries-the-answer-and-its-proof"><code>Decidable</code> carries the answer and its proof</a></h2>
+<p>Lean’s <code>Eq a b</code> is not the same construct as Rust’s <code>Eq</code> marker trait over
+<code>PartialEq</code>. A Rust <code>a == b</code> expression returns a <code>bool</code>, not a proof or
+refutation.</p>
+<h2 id="2-decidable-is-the-proof-carrying-answer"><a class="header" href="#2-decidable-is-the-proof-carrying-answer">2. <code>Decidable</code> is the proof-carrying answer</a></h2>
 <pre><code class="language-lean">class inductive Decidable (p : Prop) where
   | isFalse (h : Not p) : Decidable p
   | isTrue  (h : p)     : Decidable p
 </code></pre>
+<p>If the two levels in <code>p : Prop</code> followed by <code>h : p</code> are unfamiliar, read
+<a href="propositions-as-types.html">Propositions as types</a> first.</p>
 <pre><code class="language-text">Decidable p
-├── isTrue  h    h : p
-└── isFalse h    h : Not p    where Not p := p → False
+├── isTrue  h    where h : p
+└── isFalse h    where h : Not p
+
+Not p := p → False
 </code></pre>
-<ul>
-<li><code>inductive</code> gives it two enum-like constructors.</li>
-<li><code>class</code> makes decisions available through typeclass-instance search.</li>
-<li><code>h</code> is the proof carried by the selected constructor.</li>
-<li>Lean’s Prelude exports <code>isTrue</code> and <code>isFalse</code>, so generated code may omit the
-<code>Decidable.</code> prefix.</li>
-</ul>
-<h2 id="where-the-real-comparison-happens"><a class="header" href="#where-the-real-comparison-happens">Where the real comparison happens</a></h2>
-<p>Lean generated:</p>
+<p>The negative branch carries a function that turns any supposed proof of <code>p</code>
+into a contradiction. The Prelude exports both constructor names, which is why
+generated code may write <code>isTrue</code> rather than <code>Decidable.isTrue</code>.</p>
+<h3 id="what-class-means-here"><a class="header" href="#what-class-means-here">What <code>class</code> means here</a></h3>
+<p><code>class</code> says: “Lean may automatically find and insert values of this type.”</p>
+<p><code>class</code> does one thing here: it lets Lean search for and insert a missing
+<code>Decidable p</code> value.</p>
+<pre><code class="language-lean">(d : Decidable p)    -- the caller must pass d
+[d : Decidable p]    -- Lean searches for d and inserts it
+</code></pre>
+<p>For example:</p>
+<pre><code class="language-lean">def truthValue (p : Prop) [d : Decidable p] : Bool :=
+  match d with
+  | isTrue _  =&gt; true
+  | isFalse _ =&gt; false
+
+#eval truthValue (2 = 2)
+</code></pre>
+<p>The call supplies <code>p</code> but omits <code>d</code>. Lean searches declarations marked
+<code>instance</code> for a value of type <code>Decidable (2 = 2)</code> and inserts it. If none is
+available, Lean reports <code>failed to synthesize Decidable p</code>.</p>
+<p><code>class</code> does <strong>not</strong> contain the algorithm that decides <code>p</code>. It turns on the
+automatic lookup; an <code>instance</code> supplies a value or recipe that produces
+<code>isTrue h</code> or <code>isFalse h</code>.</p>
+<p>In Rust, a <code>T: Trait</code> bound lets the compiler resolve trait operations through
+an <code>impl</code>. In Lean, <code>[d : Decidable p]</code> makes Lean supply the actual value <code>d</code>.
+The compiler automation is similar, but <code>Decidable</code> is not a Rust-style trait
+containing methods.</p>
+<h2 id="3-decidableeq-is-the-decision-function-type"><a class="header" href="#3-decidableeq-is-the-decision-function-type">3. <code>DecidableEq</code> is the decision-function type</a></h2>
+<pre><code class="language-lean">abbrev DecidableEq (α : Sort u) :=
+  (a b : α) → Decidable (Eq a b)
+</code></pre>
+<p>For every <code>a</code> and <code>b</code> in <code>α</code>, the function returns a proof of <code>a = b</code> or a
+refutation <code>¬(a = b)</code>.</p>
+<p><code>DecidableEq</code> is a transparent function abbreviation, not a declaration made
+with <code>class</code>. When Lean sees <code>[DecidableEq α]</code>, it unfolds the abbreviation:</p>
+<pre><code class="language-text">[DecidableEq α]
+        ↓
+[(a b : α) → Decidable (a = b)]
+</code></pre>
+<p>The result is a function whose output, <code>Decidable (a = b)</code>, is a class. Lean’s
+instance mechanism therefore accepts the whole comparison function as a value
+it can search for and insert. <code>deriving</code> creates and registers that function.</p>
+<p>Rust’s <code>PartialEq::eq</code> is the nearest operation, but it returns <code>bool</code>.
+Ordinary Rust cannot give it a proof result indexed by the particular inputs.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Lean</th><th>What it is</th><th>Nearest Rust idea</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Eq a b</code></td><td>proposition that these values are equal</td><td>no direct built-in equivalent</td></tr>
+<tr><td><code>Decidable p</code></td><td>proof-carrying yes-or-no value</td><td>not a trait; only its automatic lookup is trait-like</td></tr>
+<tr><td><code>class</code></td><td>marker enabling lookup and insertion for square-bracket arguments</td><td>compiler resolving a trait bound through an <code>impl</code></td></tr>
+<tr><td><code>DecidableEq α</code></td><td>alias for the comparison-function type</td><td>function-type alias, operationally like <code>PartialEq::eq</code></td></tr>
+<tr><td><code>deriving DecidableEq</code></td><td>generates and registers that function</td><td><code>#[derive(PartialEq)]</code>, but Lean’s function returns proofs</td></tr>
+</tbody>
+</table>
+</div>
+<p>For more on <code>Sort u</code>, see <a href="type-universes.html">Type universes</a>.</p>
+<h2 id="what-deriving-creates"><a class="header" href="#what-deriving-creates">What <code>deriving</code> creates</a></h2>
+<p>The generated instance is a small wrapper around the decision function:</p>
+<pre><code class="language-lean">def instDecidableEqThread1D : DecidableEq Thread1D :=
+  instDecidableEqThread1D.decEq
+</code></pre>
+<p>The deriving handler generates the function below. It is not merely doing a
+text substitution.</p>
 <pre><code class="language-lean">def instDecidableEqThread1D.decEq :
     (x x_1 : Thread1D) → Decidable (x = x_1) :=
   fun x x_1 =&gt;
@@ -264,45 +322,29 @@ DecidableEq derivation  generated algorithm that compares values
           isFalse
             (instDecidableEqThread1D.decEq._proof_3 a a_1 b b_1 h)
 </code></pre>
-<p>The two comparisons are:</p>
-<pre><code class="language-lean">if h : a = b then          -- compare blockIdx
-if h : a_1 = b_1 then      -- compare threadIdx
-</code></pre>
-<ul>
-<li>Each field is a <code>Nat</code>.</li>
-<li>Lean uses <code>Nat</code>’s existing <code>DecidableEq</code> instance to decide each field
-equality.</li>
-<li>The <code>if h : proposition then</code> form binds:
-<ul>
-<li><code>h : proposition</code> in the true branch;</li>
-<li><code>h : Not proposition</code> in the false branch.</li>
-</ul>
-</li>
-</ul>
-<pre><code class="language-text">unpack both structures
+<p>Here <code>a</code> and <code>a_1</code> are the left block and thread fields; <code>b</code> and <code>b_1</code> are the
+right ones. Each is a <code>Nat</code>, so Lean uses <code>Nat</code>’s existing <code>DecidableEq</code>
+instance:</p>
+<pre><code class="language-text">unpack both Thread1D values
         │
         ▼
-compare blockIdx using Nat's DecidableEq
+compare blockIdx
         ├── different → isFalse proof_3
         ▼ equal
-compare threadIdx using Nat's DecidableEq
+compare threadIdx
         ├── different → isFalse proof_2
         ▼ equal
 isTrue proof_1
 </code></pre>
-<h2 id="what-h--does"><a class="header" href="#what-h--does">What <code>h ▸</code> does</a></h2>
-<p><code>h ▸ value</code> rewrites or transports <code>value</code> using equality proof <code>h</code>.</p>
-<pre><code class="language-text">block fields equal
-      │ h ▸
-      ▼
-thread fields equal
-      │ h ▸
-      ▼
-both structures now have identical fields
-      │
-      ▼
-rfl proves the complete structures are equal
+<h2 id="the-if-branches-carry-evidence"><a class="header" href="#the-if-branches-carry-evidence">The <code>if</code> branches carry evidence</a></h2>
+<p>In each generated <code>if h : ...</code>, the local name <code>h</code> has a different proof type
+in each branch:</p>
+<pre><code class="language-text">then branch    h : a = b
+else branch    h : Not (a = b)
 </code></pre>
+<p>In a true branch, <code>h ▸ value</code> transports <code>value</code> along the equality proof <code>h</code>.
+After Lean transports across both field equalities, the two structures have
+equal fields and <code>rfl</code> proves the complete equality.</p>
 <h2 id="the-three-generated-proof-helpers"><a class="header" href="#the-three-generated-proof-helpers">The three generated proof helpers</a></h2>
 <div class="table-wrapper">
 <table>
@@ -311,12 +353,12 @@ rfl proves the complete structures are equal
 </thead>
 <tbody>
 <tr><td><code>_proof_1</code></td><td>both fields match</td><td>the structure equals itself, using <code>rfl</code></td></tr>
-<tr><td><code>_proof_2</code></td><td>thread fields differ</td><td>complete structure equality would contradict that difference</td></tr>
-<tr><td><code>_proof_3</code></td><td>block fields differ</td><td>complete structure equality would contradict that difference</td></tr>
+<tr><td><code>_proof_2</code></td><td>thread fields differ</td><td>structure equality would contradict that difference</td></tr>
+<tr><td><code>_proof_3</code></td><td>block fields differ</td><td>structure equality would contradict that difference</td></tr>
 </tbody>
 </table>
 </div>
-<p>Here are the complete generated declarations for reference.</p>
+<p>Here are the complete declarations for reference.</p>
 <h3 id="_proof_1--both-fields-match"><a class="header" href="#_proof_1--both-fields-match"><code>_proof_1</code> — both fields match</a></h3>
 <pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_1 :
     ∀ (a a_1 : Nat),
@@ -324,11 +366,6 @@ rfl proves the complete structures are equal
       { blockIdx := a, threadIdx := a_1 } :=
   fun a a_1 =&gt; rfl
 </code></pre>
-<ul>
-<li>The parameters are <code>a</code> and <code>a_1</code>.</li>
-<li>Applying the theorem to both parameters returns a proof that the complete
-<code>Thread1D</code> value equals itself.</li>
-</ul>
 <h3 id="_proof_2--the-thread-fields-differ"><a class="header" href="#_proof_2--the-thread-fields-differ"><code>_proof_2</code> — the thread fields differ</a></h3>
 <pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_2 :
     ∀ (a a_1 b : Nat),
@@ -340,36 +377,16 @@ rfl proves the complete structures are equal
     LeanGpuLab.Lessons.ThreadIndex.Thread1D.mk.noConfusion n
       fun blockIdx_eq threadIdx_eq =&gt; h threadIdx_eq
 </code></pre>
-<p>The generated lambda leaves inferred types implicit. Read its outer lambda as:</p>
-<pre><code class="language-lean">fun (a a_1 b : Nat)
-    (h : ¬(a_1 = b))
-    (n :
-      { blockIdx := a, threadIdx := a_1 } =
-      { blockIdx := a, threadIdx := b }) =&gt;
-  ...
+<p>Read the final two arguments as:</p>
+<pre><code class="language-lean">h : ¬(a_1 = b)
+n : Thread1D.mk a a_1 = Thread1D.mk a b
 </code></pre>
-<ul>
-<li><code>n</code> is a proof value whose type says the complete structures are equal.</li>
-<li><code>noConfusion n</code> supplies the inner lambda with proofs that corresponding
-constructor fields are equal:</li>
-</ul>
-<pre><code class="language-text">n: Thread1D.mk a a₁ = Thread1D.mk a b
-                    │
-                    ▼
-              noConfusion
-                    │
-                    ├── blockIdx_eq
-                    └── threadIdx_eq : a₁ = b
+<p><code>noConfusion n</code> extracts the field equalities implied by <code>n</code>, including
+<code>threadIdx_eq : a_1 = b</code>. Because negation is a function, ordinary application
+finishes the contradiction:</p>
+<pre><code class="language-lean">h threadIdx_eq : False
 </code></pre>
-<p>The last expression is ordinary function application. Negation is a function
-type:</p>
-<pre><code class="language-lean">h            : ¬(a_1 = b)       -- the proof value h
-             = (a_1 = b) → False
-threadIdx_eq : a_1 = b
-
-h threadIdx_eq : False
-</code></pre>
-<p><code>blockIdx_eq</code> is unused here; the contradictory thread-field equality is enough.</p>
+<p>The unused <code>blockIdx_eq</code> is not needed.</p>
 <h3 id="_proof_3--the-block-fields-differ"><a class="header" href="#_proof_3--the-block-fields-differ"><code>_proof_3</code> — the block fields differ</a></h3>
 <pre><code class="language-lean">theorem LeanGpuLab.Lessons.ThreadIndex.instDecidableEqThread1D.decEq._proof_3 :
     ∀ (a a_1 b b_1 : Nat),
@@ -381,48 +398,34 @@ h threadIdx_eq : False
     LeanGpuLab.Lessons.ThreadIndex.Thread1D.mk.noConfusion n
       fun blockIdx_eq threadIdx_eq =&gt; h blockIdx_eq
 </code></pre>
-<ul>
-<li><code>h</code> says the two block fields are not equal.</li>
-<li>Assuming the structures are equal would imply equal block fields.</li>
-<li>That contradiction produces the <code>Not (Eq x x_1)</code> required by <code>isFalse</code>.</li>
-</ul>
-<p>The result is always correctly typed:</p>
+<p>This is the same argument using the contradictory block-field equality. Every
+branch therefore returns the required type:</p>
 <pre><code class="language-text">isTrue  proof_1    : Decidable (Eq x x_1)
 isFalse proof_2    : Decidable (Eq x x_1)
 isFalse proof_3    : Decidable (Eq x x_1)
 </code></pre>
 <h2 id="how-we-found-the-generated-code"><a class="header" href="#how-we-found-the-generated-code">How we found the generated code</a></h2>
-<pre><code class="language-lean">#synth DecidableEq Thread1D
-</code></pre>
-<p>revealed:</p>
-<pre><code class="language-text">instDecidableEqThread1D
-</code></pre>
-<p>Then we followed the generated declarations:</p>
 <pre><code class="language-text">#synth DecidableEq Thread1D
-        │
+        │ reveals
         ▼
-#print instDecidableEqThread1D
-        │
+instDecidableEqThread1D
+        │ #print instDecidableEqThread1D
         ▼
-#print instDecidableEqThread1D.decEq
+instDecidableEqThread1D.decEq
 </code></pre>
 <p>To expose hidden proof-helper names:</p>
 <pre><code class="language-lean">set_option pp.proofs true in
 #print instDecidableEqThread1D.decEq
 </code></pre>
-<p>For the complete inspection workflow, see
+<p>For the full inspection workflow, see
 <a href="inspecting-generated-code.html">Inspecting generated Lean code</a>.</p>
 <h2 id="pocket-summary"><a class="header" href="#pocket-summary">Pocket summary</a></h2>
-<pre><code class="language-text">Eq                    states equality
-Decidable             carries proof of yes or no
-DecidableEq α         names the required decision-function type
-deriving DecidableEq  generates the field-by-field implementation
+<pre><code class="language-text">Eq a b                 the equality proposition
+Decidable p            proof-carrying yes-or-no value Lean may synthesize
+DecidableEq α          alias for the decision-function type
+DecidableEq α instance one concrete function Lean can find implicitly
+deriving DecidableEq   generates that function from field decisions
 </code></pre>
-<ul>
-<li>The comparison logic comes from the deriving handler.</li>
-<li>Field decisions come from the fields’ existing <code>DecidableEq</code> instances.</li>
-<li>Successful and unsuccessful results both carry checked proofs.</li>
-</ul>
 
                     </main>
 

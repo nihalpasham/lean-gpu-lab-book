@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Lean GPU Lab</title>
-        <base href="/lean-gpu-lab-book/">
+        <title>How to read a Lean function definition - Lean GPU Lab</title>
 
 
         <!-- Custom HTML head -->
@@ -175,14 +174,189 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="how-to-read-a-lean-function-definition"><a class="header" href="#how-to-read-a-lean-function-definition">How to read a Lean function definition</a></h1>
+<p>Lean can put several kinds of parameters into one line. The punctuation says
+who supplies each one.</p>
+<p>Start with this definition:</p>
+<pre><code class="language-lean">def equal {α : Type} [DecidableEq α] (a b : α) : Bool :=
+  decide (a = b)
+</code></pre>
+<p>We will give the square-bracket parameter a name so that every part is visible:</p>
+<pre><code class="language-lean">def equal
+    {α : Type}
+    [d : DecidableEq α]
+    (a b : α)
+    : Bool :=
+  decide (a = b)
+</code></pre>
+<p>Read it as:</p>
+<blockquote>
+<p>Define <code>equal</code>. It works for an inferred type <code>α</code>. Lean must find an equality
+decision function <code>d</code> for that type. The caller passes <code>a</code> and <code>b</code>, and the
+result is a <code>Bool</code>.</p>
+</blockquote>
+<h2 id="the-whole-line-at-a-glance"><a class="header" href="#the-whole-line-at-a-glance">The whole line at a glance</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Syntax</th><th>Declares</th><th>Who supplies it?</th></tr>
+</thead>
+<tbody>
+<tr><td><code>def equal</code></td><td>a definition named <code>equal</code></td><td>this line introduces it</td></tr>
+<tr><td><code>{α : Type}</code></td><td>an implicit type parameter</td><td>Lean normally infers it</td></tr>
+<tr><td><code>[d : DecidableEq α]</code></td><td>an implicit instance value</td><td>Lean searches for it</td></tr>
+<tr><td><code>(a b : α)</code></td><td>two ordinary value parameters</td><td>the caller passes them</td></tr>
+<tr><td><code>: Bool</code></td><td>the result type</td><td>the definition promises it</td></tr>
+<tr><td><code>:=</code></td><td>the start of the body</td><td>everything after it computes the result</td></tr>
+</tbody>
+</table>
+</div>
+<p>The braces are not a block, and the brackets are not an array. They select how
+Lean obtains function arguments.</p>
+<h2 id="α--type--infer-the-type-argument"><a class="header" href="#α--type--infer-the-type-argument"><code>{α : Type}</code> — infer the type argument</a></h2>
+<pre><code class="language-lean">{α : Type}
+</code></pre>
+<ul>
+<li><code>α</code> is an identifier. We could call it <code>T</code> instead.</li>
+<li><code>Type</code> says that <code>α</code> itself is a type, such as <code>Nat</code>, <code>Bool</code>, or <code>Thread1D</code>.</li>
+<li>Curly braces make this argument implicit: Lean tries to infer it from later
+arguments.</li>
+</ul>
+<p>Curly braces can make any parameter implicit. This one happens to be a type
+parameter because its type is <code>Type</code>.</p>
+<p>This call makes the hidden argument visible:</p>
+<pre><code class="language-lean">equal (α := Nat) 10 20
+</code></pre>
+<p>Most of the time we omit it:</p>
+<pre><code class="language-lean">equal 10 20
+</code></pre>
+<p>This <code>α</code> is the part nearest to a generic type parameter such as Rust’s <code>T</code>.</p>
+<h2 id="d--decidableeq-α--search-for-a-value"><a class="header" href="#d--decidableeq-α--search-for-a-value"><code>[d : DecidableEq α]</code> — search for a value</a></h2>
+<pre><code class="language-lean">[d : DecidableEq α]
+</code></pre>
+<p><code>d</code> is not another type parameter. It is a value whose type is
+<code>DecidableEq α</code>. Square brackets tell Lean to find and insert that value through
+instance search.</p>
+<p>The original <code>[DecidableEq α]</code> leaves this value unnamed. Writing
+<code>[d : DecidableEq α]</code> only gives it a name that we can use in the explanation.</p>
+<p><code>DecidableEq α</code> is an abbreviation for this function type:</p>
+<pre><code class="language-lean">(left right : α) → Decidable (left = right)
+</code></pre>
+<p>The arrow reads “returns”: after receiving <code>left</code> and <code>right</code>, the function
+returns their equality decision.</p>
+<p>Therefore <code>d</code> is itself a function:</p>
+<pre><code class="language-lean">d a b
+-- : Decidable (a = b)
+</code></pre>
+<p>Lean chooses and inserts <code>d</code> while elaborating the call. The selected function
+can still compare the actual <code>a</code> and <code>b</code> values when the program runs.</p>
+<p>The later chapter <a href="deriving-decidable-eq.html">Dissecting <code>deriving DecidableEq</code></a>
+explains what that decision contains and how Lean generates <code>d</code>.</p>
+<h2 id="a-b--α--receive-the-ordinary-arguments"><a class="header" href="#a-b--α--receive-the-ordinary-arguments"><code>(a b : α)</code> — receive the ordinary arguments</a></h2>
+<pre><code class="language-lean">(a b : α)
+</code></pre>
+<p>This is compact notation for:</p>
+<pre><code class="language-lean">(a : α) (b : α)
+</code></pre>
+<p>Both are explicit arguments, so the caller passes both values.</p>
+<p>They are also curried: <code>equal a</code> is a valid partial call that returns a function
+waiting for <code>b</code>.</p>
+<p>Lean applies functions with spaces. <code>equal 10 20</code> is the Lean counterpart of
+<code>equal(10, 20)</code> in languages that use parentheses and commas at the call site.</p>
+<h2 id="-bool---state-the-result-and-begin-the-body"><a class="header" href="#-bool---state-the-result-and-begin-the-body"><code>: Bool :=</code> — state the result and begin the body</a></h2>
+<pre><code class="language-lean">: Bool :=
+</code></pre>
+<ul>
+<li>The colon reads “has type.” The result has type <code>Bool</code>.</li>
+<li><code>:=</code> reads “is defined as.” The function body follows it.</li>
+</ul>
+<h2 id="decide-a--b--turn-the-proposition-into-a-boolean"><a class="header" href="#decide-a--b--turn-the-proposition-into-a-boolean"><code>decide (a = b)</code> — turn the proposition into a Boolean</a></h2>
+<pre><code class="language-lean">decide (a = b)
+</code></pre>
+<p>Function application still uses a space here. The parentheses group the entire
+equality expression into the one argument passed to <code>decide</code>.</p>
+<p>In Lean, <code>a = b</code> is a proposition. It has type <code>Prop</code>; it is not already a
+<code>Bool</code>.</p>
+<p>The chapter <a href="propositions-as-types.html">Propositions as types</a> explains why a
+proposition can itself appear as the type in a declaration such as <code>h : p</code>.</p>
+<p><code>decide</code> turns a decidable proposition into a Boolean. To do that here, it
+needs a value of type:</p>
+<pre><code class="language-lean">Decidable (a = b)
+</code></pre>
+<p>The instance parameter <code>d</code> produces exactly that value when applied to <code>a</code> and
+<code>b</code>. Lean fills in the hidden argument to <code>decide</code> with <code>d a b</code>.</p>
+<h2 id="make-the-hidden-arguments-visible"><a class="header" href="#make-the-hidden-arguments-visible">Make the hidden arguments visible</a></h2>
+<p>Here is the same idea with every argument passed directly:</p>
+<pre><code class="language-lean">def equalExplicit
+    (α : Type)
+    (d : DecidableEq α)
+    (a b : α)
+    : Bool :=
+  @decide (a = b) (d a b)
+</code></pre>
+<p>The <code>@</code> exposes <code>decide</code>’s normally hidden instance argument, which we fill
+directly with <code>d a b</code>.</p>
+<p>Likewise, this ordinary call:</p>
+<pre><code class="language-lean">equal (α := Nat) 10 20
+</code></pre>
+<p>can be written with its hidden argument positions exposed:</p>
+<pre><code class="language-lean">@equal Nat (inferInstance : DecidableEq Nat) 10 20
+</code></pre>
+<p><code>inferInstance</code> asks Lean to perform instance search at that position.</p>
+<h2 id="nearest-rust-reading"><a class="header" href="#nearest-rust-reading">Nearest Rust reading</a></h2>
+<p>At the level of intent, the definition is near:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn equal&lt;T&gt;(a: T, b: T) -&gt; bool
+where
+    T: PartialEq,
+{
+    a == b
+}
+<span class="boring">}</span></code></pre>
+<p>The syntax correspondence is:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Lean</th><th>Nearest Rust syntax</th></tr>
+</thead>
+<tbody>
+<tr><td><code>{α : Type}</code></td><td><code>&lt;T&gt;</code></td></tr>
+<tr><td><code>[DecidableEq α]</code></td><td><code>where T: PartialEq</code></td></tr>
+<tr><td><code>(a b : α)</code></td><td><code>(a: T, b: T)</code></td></tr>
+<tr><td><code>: Bool</code></td><td><code>-&gt; bool</code></td></tr>
+<tr><td><code>:= body</code></td><td><code>{ body }</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>This is only a syntax and usage comparison. Rust’s equality operation returns a
+<code>bool</code>; Lean’s <code>DecidableEq</code> first produces a decision carrying proof evidence,
+and <code>decide</code> reduces that answer to <code>Bool</code>. Rust’s <code>PartialEq</code> may implement a
+custom relation; Lean’s <code>DecidableEq</code> must decide Lean’s built-in equality and
+support its answer with checked evidence.</p>
+<h2 id="pocket-grammar"><a class="header" href="#pocket-grammar">Pocket grammar</a></h2>
+<pre><code class="language-text">def name {inferred arguments} [searched-for arguments]
+    (explicit arguments) : result type :=
+  body
+</code></pre>
+<pre><code class="language-text">{ }   Lean infers
+[ ]   Lean searches
+( )   the caller passes
+:     “has type”
+:=    “is defined as”
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="lean-tooling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
+                            <a rel="next prefetch" href="propositions-as-types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -190,7 +364,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="lean-tooling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
+                    <a rel="next prefetch" href="propositions-as-types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
