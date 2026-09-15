@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1fab6641.js";
+            window.path_to_searchindex_js = "searchindex-59277be9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-4c38a7d6.js"></script>
@@ -720,6 +720,110 @@ support its answer with checked evidence.</p>
 :     “has type”
 :=    “is defined as”
 </code></pre>
+<h2 id="fun-n--n--construct-a-function"><a class="header" href="#fun-n--n--construct-a-function"><code>fun n =&gt; n</code> — construct a function</a></h2>
+<p>The <a href="https://www.leanlanguage.app/">Lean Lab</a> examples connect ordinary
+functions to proofs. Start with:</p>
+<pre><code class="language-lean">def keepNumber : Nat → Nat := fun n =&gt; n
+</code></pre>
+<p><code>fun n =&gt; n</code> creates an <strong>anonymous function</strong>: a function expression that
+does not declare a name. Read it as “take an argument called <code>n</code>, and return
+<code>n</code>.” The definition gives that function the name <code>keepNumber</code>.</p>
+<p>The general pattern is <code>fun argument =&gt; body</code>. The first <code>n</code> names the
+parameter; the final <code>n</code> is the expression returned. Lean infers that <code>n</code> has
+type <code>Nat</code> from the expected function type <code>Nat → Nat</code>.</p>
+<p>This is another way to write the same definition:</p>
+<pre><code class="language-lean">def keepNumber (n : Nat) : Nat := n
+</code></pre>
+<p>The two arrows have different jobs:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Syntax</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Nat → Nat</code></td><td>a type: functions taking a <code>Nat</code> and returning a <code>Nat</code></td></tr>
+<tr><td><code>fun n =&gt; n</code></td><td>a function expression: take <code>n</code> and return it</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <code>=&gt;</code> separates the anonymous function’s parameters from its body. This
+notation is also called a <strong>lambda expression</strong>.</p>
+<h2 id="read-a-theorem-as-parameters-conclusion-and-proof"><a class="header" href="#read-a-theorem-as-parameters-conclusion-and-proof">Read a theorem as parameters, conclusion, and proof</a></h2>
+<p>For the theorem declarations below, use this grammar:</p>
+<pre><code class="language-text">theorem name (inputs and assumptions) : conclusion := proof
+</code></pre>
+<ul>
+<li>Before the <strong>outer colon</strong>: parameters, including any proof assumptions.</li>
+<li>Between that colon and <code>:=</code>: the proposition to prove, or conclusion.</li>
+<li>After <code>:=</code>: the proof term, or a tactic block that constructs it.</li>
+</ul>
+<p>Parameters can contain their own colons. In <code>(hp : P)</code>, the colon says that
+<code>hp</code> has type <code>P</code>. The colon after the parameter groups introduces the
+conclusion. Assumptions are also inputs: they are proof inputs.</p>
+<h3 id="keepproof--return-the-proof-you-receive"><a class="header" href="#keepproof--return-the-proof-you-receive"><code>keepProof</code> — return the proof you receive</a></h3>
+<pre><code class="language-lean">theorem keepProof (P : Prop) : P → P := fun hp =&gt; hp
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Part</th><th>Role</th></tr>
+</thead>
+<tbody>
+<tr><td><code>theorem</code></td><td>the keyword</td></tr>
+<tr><td><code>keepProof</code></td><td>the theorem’s name</td></tr>
+<tr><td><code>(P : Prop)</code></td><td>an input: a proposition</td></tr>
+<tr><td><code>: P → P</code></td><td>the conclusion: if <code>P</code>, then <code>P</code></td></tr>
+<tr><td><code>:= fun hp =&gt; hp</code></td><td>the proof: take a proof of <code>P</code> and return it</td></tr>
+</tbody>
+</table>
+</div>
+<p>Declaring <code>P : Prop</code> does not assume that <code>P</code> is true. There is no proof
+assumption among this declaration’s parameters. The body introduces one
+locally: Lean reads <code>fun hp =&gt; hp</code> here as <code>fun (hp : P) =&gt; hp</code>.</p>
+<p>To prove <code>P → P</code>, temporarily assume a proof <code>hp : P</code>, then use that same
+proof to establish <code>P</code>. This proves the implication without needing a proof
+of <code>P</code> beforehand.</p>
+<p>The tactic version does the same thing:</p>
+<pre><code class="language-lean">example (P : Prop) : P → P := by
+  intro hp
+  exact hp
+</code></pre>
+<p><code>intro hp</code> introduces the local assumption <code>hp : P</code> and leaves the goal <code>P</code>.
+<code>exact hp</code> supplies the proof of that goal.</p>
+<h3 id="applyproof--use-a-proof-of-an-implication"><a class="header" href="#applyproof--use-a-proof-of-an-implication"><code>applyProof</code> — use a proof of an implication</a></h3>
+<pre><code class="language-lean">theorem applyProof (P Q : Prop) (hpq : P → Q) (hp : P) : Q :=
+  hpq hp
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Part</th><th>Role</th></tr>
+</thead>
+<tbody>
+<tr><td><code>(P Q : Prop)</code></td><td>inputs: two propositions</td></tr>
+<tr><td><code>(hpq : P → Q)</code></td><td>an assumption: a proof that <code>P</code> implies <code>Q</code></td></tr>
+<tr><td><code>(hp : P)</code></td><td>another assumption: a proof of <code>P</code></td></tr>
+<tr><td><code>: Q</code></td><td>the conclusion</td></tr>
+<tr><td><code>:= hpq hp</code></td><td>the proof: apply <code>hpq</code> to <code>hp</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The conclusion is only <code>Q</code>. The preceding <code>(hp : P)</code> is still a parameter,
+just like <code>(hpq : P → Q)</code>.</p>
+<p><code>hpq hp</code> is function application. The function <code>hpq</code> takes a proof of <code>P</code>,
+and <code>hp</code> is such a proof. The result is a proof of <code>Q</code>.</p>
+<p>This is the Curry–Howard correspondence at work: a proof of an implication
+is a function from proofs of its premise to proofs of its conclusion.</p>
+<h3 id="one-concrete-use"><a class="header" href="#one-concrete-use">One concrete use</a></h3>
+<pre><code class="language-lean">example : 2 + 2 = 4 := rfl
+example : 2 + 2 = 4 := keepProof (2 + 2 = 4) rfl
+
+#eval keepNumber 42
+-- 42
+</code></pre>
+<p>In the second proof, <code>(2 + 2 = 4)</code> supplies the proposition <code>P</code>, and <code>rfl</code>
+supplies a proof of it. <code>keepProof</code> returns that proof, just as <code>keepNumber</code>
+returns the number it receives.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="propositions-as-types--reading-p--prop-and-h--p"><a class="header" href="#propositions-as-types--reading-p--prop-and-h--p">Propositions as types — reading <code>p : Prop</code> and <code>h : p</code></a></h1>
 <h2 id="the-whole-idea"><a class="header" href="#the-whole-idea">The whole idea</a></h2>
